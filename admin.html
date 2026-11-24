@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gulls Gallery | Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f1e9;color:#24221e;font-family:Arial,sans-serif;padding:22px}
+main{max-width:850px;margin:35px auto}
+h1{font-family:Georgia,serif;font-weight:normal}
+.card{background:white;padding:22px;border-radius:12px;margin:18px 0}
+input,textarea,select{width:100%;padding:13px;margin:7px 0 15px;border:1px solid #ddd;border-radius:7px;font:inherit}
+textarea{min-height:90px}
+button{padding:12px 18px;border:0;border-radius:7px;background:#24221e;color:white;cursor:pointer;margin:4px}
+button.secondary{background:#e9e5dc;color:#24221e}
+button.danger{background:#a33333}
+.painting{display:flex;gap:15px;align-items:center;border-bottom:1px solid #eee;padding:14px 0}
+.painting img{width:95px;height:95px;object-fit:cover;border-radius:7px}
+.details{flex:1;min-width:0}
+#dashboard,#login{display:none}
+small{color:#777}
+@media(max-width:520px){
+body{padding:12px}
+main{margin:15px auto}
+.card{padding:16px}
+.painting{align-items:flex-start;flex-wrap:wrap}
+.painting img{width:75px;height:75px}
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Gulls Gallery</h1>
+<p>Admin Dashboard</p>
+
+<section id="login" class="card">
+<h2>Admin Login</h2>
+<form id="loginForm">
+<label>Email</label>
+<input id="email" type="email" required placeholder="Your admin email">
+<label>Password</label>
+<input id="password" type="password" required placeholder="Your password">
+<button type="submit">Sign In</button>
+</form>
+<p id="loginMessage"></p>
+</section>
+
+<section id="dashboard">
+<div class="card">
+<h2>Upload a Painting</h2>
+<form id="uploadForm">
+<label>Painting Image</label>
+<input id="image" type="file" accept="image/*" required>
+
+<label>Title</label>
+<input id="title" required placeholder="Painting title">
+
+<label>Description</label>
+<textarea id="description" placeholder="Describe your painting"></textarea>
+
+<label>Price</label>
+<input id="price" type="number" min="0" step="0.01" required placeholder="1500">
+
+<label>Currency</label>
+<select id="currency">
+<option value="PKR">PKR</option>
+<option value="USD">USD</option>
+</select>
+
+<label>Category</label>
+<input id="category" placeholder="Painting">
+
+<label>Dimensions</label>
+<input id="dimensions" placeholder="10 × 12 inches">
+
+<label>Medium</label>
+<input id="medium" placeholder="Acrylic on canvas">
+
+<button type="submit">Upload Painting</button>
+</form>
+<p id="uploadMessage"></p>
+</div>
+
+<div class="card">
+<h2>Your Paintings</h2>
+<div id="paintings">Loading paintings...</div>
+</div>
+
+<button class="secondary" id="logout">Sign Out</button>
+</section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://opxrtjbpwoeqiqrifhfp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO"
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const loginSection = document.getElementById("login");
+const dashboard = document.getElementById("dashboard");
+
+function showLogin(){
+  loginSection.style.display = "block";
+  dashboard.style.display = "none";
+}
+
+function showDashboard(){
+  loginSection.style.display = "none";
+  dashboard.style.display = "block";
+  loadPaintings();
+}
+
+async function checkLogin(){
+  const {data:{session}} = await db.auth.getSession();
+  if(session) showDashboard();
+  else showLogin();
+}
+
+document.getElementById("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const message = document.getElementById("loginMessage");
+  message.textContent = "Signing in...";
+
+  const {error} = await db.auth.signInWithPassword({
+    email: document.getElementById("email").value,
+    password: document.getElementById("password").value
+  });
+
+  if(error) message.textContent = error.message;
+  else showDashboard();
+});
+
+document.getElementById("logout").addEventListener("click", async ()=>{
+  await db.auth.signOut();
+  showLogin();
+});
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+async function loadPaintings(){
+  const container = document.getElementById("paintings");
+  container.textContent = "Loading...";
+
+  const {data,error} = await db
+    .from("paintings")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    container.textContent = error.message;
+    return;
+  }
+
+  if(!data.length){
+    container.textContent = "No paintings uploaded yet.";
+    return;
+  }
+
+  container.innerHTML = data.map(p=>{
+    const imageURL = db.storage.from("painting").getPublicUrl(p.image_path).data.publicUrl;
+
+    return `
+      <div class="painting">
+        <img src="${escapeHTML(imageURL)}" alt="">
+        <div class="details">
+          <strong>${escapeHTML(p.title)}</strong><br>
+          <small>${escapeHTML(p.currency)} ${escapeHTML(p.price)}</small><br>
+          <button class="secondary" onclick="editPainting('${p.id}')">Edit</button>
+          <button class="danger" onclick="deletePainting('${p.id}')">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+document.getElementById("uploadForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const message = document.getElementById("uploadMessage");
+  const file = document.getElementById("image").files[0];
+
+  if(!file) return;
+  if(!file.type.startsWith("image/")){
+    message.textContent = "Please select an image.";
+    return;
+  }
+
+  message.textContent = "Uploading...";
+
+  const extension = file.name.split(".").pop().toLowerCase();
+  const path = crypto.randomUUID() + "." + extension;
+
+  const {error:uploadError} = await db.storage
+    .from("painting")
+    .upload(path,file);
+
+  if(uploadError){
+    message.textContent = uploadError.message;
+    return;
+  }
+
+  const {error:insertError} = await db.from("paintings").insert({
+    title: document.getElementById("title").value,
+    description: document.getElementById("description").value,
+    price: Number(document.getElementById("price").value),
+    currency: document.getElementById("currency").value,
+    category: document.getElementById("category").value,
+    dimensions: document.getElementById("dimensions").value,
+    medium: document.getElementById("medium").value,
+    image_path: path,
+    status: "available"
+  });
+
+  if(insertError){
+    await db.storage.from("painting").remove([path]);
+    message.textContent = insertError.message;
+    return;
+  }
+
+  message.textContent = "Painting uploaded successfully!";
+  document.getElementById("uploadForm").reset();
+  loadPaintings();
+});
+
+async function editPainting(id){
+  const {data:p,error} = await db.from("paintings").select("*").eq("id",id).single();
+  if(error){alert(error.message);return;}
+
+  const title = prompt("Painting title:",p.title);
+  if(title === null) return;
+
+  const description = prompt("Description:",p.description || "");
+  if(description === null) return;
+
+  const price = prompt("Price:",p.price);
+  if(price === null) return;
+  if(price.trim()==="" || !Number.isFinite(Number(price)) || Number(price)<0){
+    alert("Please enter a valid price.");
+    return;
+  }
+
+  const {error:updateError} = await db.from("paintings")
+    .update({title,description,price:Number(price)})
+    .eq("id",id);
+
+  if(updateError) alert(updateError.message);
+  else loadPaintings();
+}
+
+async function deletePainting(id){
+  if(!confirm("Delete this painting permanently?")) return;
+
+  const {data:p,error} = await db.from("paintings")
+    .select("image_path").eq("id",id).single();
+
+  if(error){alert(error.message);return;}
+
+  const {error:deleteError} = await db.from("paintings")
+    .delete().eq("id",id);
+
+  if(deleteError){alert(deleteError.message);return;}
+
+  await db.storage.from("painting").remove([p.image_path]);
+  loadPaintings();
+}
+
+checkLogin();
+</script>
+</body>
+</html>
