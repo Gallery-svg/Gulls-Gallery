@@ -362,7 +362,7 @@ function getImageURL(path) {
   const cleanPath = path.replace(/^\/+/, "");
 
   return supabaseClient.storage
-    .from("paintings")
+    .from("painting")
     .getPublicUrl(cleanPath).data.publicUrl;
 }
 
