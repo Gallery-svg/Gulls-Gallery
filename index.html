@@ -4,8 +4,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gulls Gallery | Discover Original Art</title>
-<meta name="description" content="Discover unique original paintings at Gulls Gallery. Explore art and contact us for international purchases.">
+
+<title>Gulls Gallery | Original Art</title>
+<meta name="description" content="Discover original paintings at Gulls Gallery. Explore unique artwork and inquire about international purchases.">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 * {
@@ -14,9 +17,7 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background: #f8f6f1;
@@ -25,29 +26,35 @@ body {
 }
 
 header {
-  padding: 25px 8%;
+  padding: 24px 7%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #dedbd3;
+  position: sticky;
+  top: 0;
+  background: #f8f6f1;
+  z-index: 10;
 }
 
 .logo {
-  font-size: 25px;
+  font-size: 23px;
   letter-spacing: 3px;
 }
 
 nav {
   display: flex;
-  gap: 28px;
+  gap: 25px;
 }
 
 nav a {
-  color: #333;
   text-decoration: none;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
+  color: #333;
+  font: 12px Arial, sans-serif;
+  letter-spacing: 1px;
 }
+
+nav a:hover { color: #a58b62; }
 
 .hero {
   min-height: 570px;
@@ -60,9 +67,8 @@ nav a {
 }
 
 .tagline {
-  font-family: Arial, sans-serif;
+  font: 11px Arial, sans-serif;
   letter-spacing: 5px;
-  font-size: 11px;
   color: #8d806b;
   margin-bottom: 25px;
 }
@@ -70,56 +76,108 @@ nav a {
 .hero h1 {
   font-size: clamp(48px, 8vw, 88px);
   font-weight: normal;
-  letter-spacing: 5px;
+  letter-spacing: 4px;
 }
 
 .hero p {
   margin-top: 22px;
-  font-size: 17px;
   color: #777;
-  line-height: 1.8;
+  line-height: 1.9;
+  font-size: 17px;
 }
 
 .btn {
   display: inline-block;
-  margin-top: 35px;
-  padding: 16px 38px;
+  margin-top: 32px;
+  padding: 16px 35px;
   background: #282820;
   color: white;
   text-decoration: none;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
+  font: 12px Arial, sans-serif;
   letter-spacing: 2px;
-  transition: 0.3s;
+  border: none;
+  cursor: pointer;
 }
 
-.btn:hover {
-  background: #8d806b;
-}
+.btn:hover { background: #8d806b; }
 
-section {
-  padding: 85px 8%;
-}
+section { padding: 85px 7%; }
 
 .section-title {
   text-align: center;
-  font-size: 38px;
+  font-size: 39px;
   font-weight: normal;
-  margin-bottom: 15px;
 }
 
 .section-subtitle {
   text-align: center;
-  font-family: Arial, sans-serif;
   color: #888;
-  font-size: 13px;
-  margin-bottom: 55px;
+  font: 13px Arial, sans-serif;
+  margin: 15px 0 50px;
+  line-height: 1.8;
+}
+
+#painting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.painting-card {
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid #e7e3da;
+}
+
+.painting-card img {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  display: block;
+  background: #eae7df;
+}
+
+.painting-info { padding: 22px; }
+
+.painting-info h3 {
+  font-size: 21px;
+  font-weight: normal;
+}
+
+.painting-info p {
+  color: #888;
+  font: 13px Arial, sans-serif;
+  margin-top: 10px;
+  line-height: 1.7;
+}
+
+.price {
+  font: 16px Arial, sans-serif;
+  margin-top: 17px;
+  color: #806a48;
+}
+
+.painting-info button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px solid #282820;
+  background: transparent;
+  cursor: pointer;
+  font: 11px Arial, sans-serif;
+  letter-spacing: 1px;
+}
+
+.painting-info button:hover {
+  background: #282820;
+  color: white;
 }
 
 .empty-shop {
-  text-align: center;
-  padding: 75px 20px;
   border: 1px solid #dedbd3;
+  padding: 75px 20px;
+  text-align: center;
+  grid-column: 1 / -1;
 }
 
 .empty-shop h3 {
@@ -128,10 +186,17 @@ section {
 }
 
 .empty-shop p {
-  color: #888;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
   margin-top: 15px;
+  color: #888;
+  font: 13px Arial, sans-serif;
+  line-height: 1.8;
+}
+
+#shop-status {
+  text-align: center;
+  font: 13px Arial, sans-serif;
+  color: #888;
+  margin: 20px;
 }
 
 .about {
@@ -147,40 +212,46 @@ section {
   font-size: 16px;
 }
 
-.contact {
-  text-align: center;
+.contact { text-align: center; }
+
+.contact p {
+  color: #888;
+  font: 13px Arial, sans-serif;
+  line-height: 1.8;
 }
 
 footer {
   padding: 30px;
   text-align: center;
   border-top: 1px solid #dedbd3;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
   color: #888;
+  font: 12px Arial, sans-serif;
 }
 
-@media(max-width:600px) {
+@media(max-width: 800px) {
+  #painting-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media(max-width: 550px) {
   header {
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
   }
 
-  nav {
-    gap: 17px;
+  nav { gap: 15px; }
+  nav a { font-size: 10px; }
+
+  .hero { min-height: 450px; }
+
+  section { padding: 65px 6%; }
+
+  #painting-grid {
+    grid-template-columns: 1fr;
   }
 
-  nav a {
-    font-size: 11px;
-  }
-
-  .hero {
-    min-height: 480px;
-  }
-
-  section {
-    padding: 65px 6%;
-  }
+  .painting-card img { height: 300px; }
 }
 </style>
 </head>
@@ -199,8 +270,9 @@ footer {
 </header>
 
 <main>
+
 <section class="hero" id="home">
-  <div class="tagline">ART • CREATIVITY • EXPRESSION</div>
+  <div class="tagline">ART · CREATIVITY · EXPRESSION</div>
 
   <h1>Gulls Gallery</h1>
 
@@ -219,22 +291,19 @@ footer {
     Explore our collection of original artwork.
   </p>
 
-  <div class="empty-shop">
-    <h3>Something beautiful is coming.</h3>
-    <p>
-      Our collection will appear here soon.
-      Stay tuned for original paintings.
-    </p>
+  <div id="shop-status">Loading paintings...</div>
+
+  <div id="painting-grid">
   </div>
 </section>
 
 <section class="about" id="about">
-  <h2 class="section-title">About Gulls Gallery</h2>
+  <h2 class="section-title">Our Story</h2>
 
   <p>
     Welcome to Gulls Gallery, a place where creativity
-    meets expression. Explore original artwork and discover
-    paintings that bring beauty and character to every space.
+    meets expression. Discover original paintings and
+    artwork that bring beauty and character to every space.
   </p>
 </section>
 
@@ -242,18 +311,168 @@ footer {
   <h2 class="section-title">Get in Touch</h2>
 
   <p class="section-subtitle">
-    Interested in a painting? We'd love to hear from you.
+    Interested in a painting? Contact us about purchasing
+    and international shipping.
   </p>
 
-  <p style="color:#888;font-family:Arial;font-size:13px;">
-    Contact information coming soon.
+  <p>
+    For painting inquiries, please contact us through our
+    official contact details.
   </p>
 </section>
+
 </main>
 
 <footer>
   © 2026 Gulls Gallery. All rights reserved.
 </footer>
+
+<script>
+const SUPABASE_URL =
+  "https://opxrtjbpwoeqiqrifhfp.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const grid = document.getElementById("painting-grid");
+const status = document.getElementById("shop-status");
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function getImageURL(path) {
+  if (!path) return "";
+
+  if (path.startsWith("https://") || path.startsWith("http://")) {
+    return path;
+  }
+
+  const cleanPath = path.replace(/^\/+/, "");
+
+  return supabaseClient.storage
+    .from("paintings")
+    .getPublicUrl(cleanPath).data.publicUrl;
+}
+
+function formatPrice(price, currency) {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD"
+    }).format(Number(price));
+  } catch {
+    return `${currency || "USD"} ${price}`;
+  }
+}
+
+function showEmptyShop() {
+  grid.innerHTML = `
+    <div class="empty-shop">
+      <h3>Something beautiful is coming.</h3>
+      <p>
+        Our collection is waiting to be discovered.
+        Check back soon for original paintings.
+      </p>
+    </div>
+  `;
+}
+
+async function loadPaintings() {
+  status.textContent = "Loading paintings...";
+
+  const { data, error } = await supabaseClient
+    .from("paintings")
+    .select("*")
+    .eq("status", "available")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Supabase error:", error);
+    status.textContent =
+      "We couldn't load the collection. Please try again later.";
+    showEmptyShop();
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    status.textContent = "";
+    showEmptyShop();
+    return;
+  }
+
+  status.textContent = "";
+
+  grid.innerHTML = data.map(painting => {
+    const imageURL = getImageURL(painting.image_path);
+
+    return `
+      <article class="painting-card">
+        <img
+          src="${escapeHTML(imageURL)}"
+          alt="${escapeHTML(painting.title)}"
+          loading="lazy"
+        >
+
+        <div class="painting-info">
+          <h3>${escapeHTML(painting.title)}</h3>
+
+          <p>${escapeHTML(painting.description)}</p>
+
+          ${painting.category ? `
+            <p>${escapeHTML(painting.category)}</p>
+          ` : ""}
+
+          ${painting.dimensions ? `
+            <p>Dimensions: ${escapeHTML(painting.dimensions)}</p>
+          ` : ""}
+
+          ${painting.medium ? `
+            <p>Medium: ${escapeHTML(painting.medium)}</p>
+          ` : ""}
+
+          <div class="price">
+            ${escapeHTML(formatPrice(
+              painting.price,
+              painting.currency
+            ))}
+          </div>
+
+          <button
+            onclick="contactAboutPainting('${encodeURIComponent(
+              painting.title
+            )}')"
+          >
+            INQUIRE ABOUT THIS PAINTING
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function contactAboutPainting(encodedTitle) {
+  const title = decodeURIComponent(encodedTitle);
+
+  alert(
+    "You selected: " + title +
+    "\n\nOur contact details will be added soon."
+  );
+}
+
+loadPaintings();
+</script>
 
 </body>
 </html>
