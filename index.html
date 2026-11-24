@@ -462,14 +462,23 @@ async function loadPaintings() {
   }).join("");
 }
 
-function contactAboutPainting(encodedTitle) {
-  const title = decodeURIComponent(encodedTitle);
 
-  alert(
-    "You selected: " + title +
-    "\n\nOur contact details will be added soon."
-  );
+function contactAboutPainting(encodedTitle) {
+    const title = decodeURIComponent(encodedTitle);
+
+    const message = `Hi! I'm interested in purchasing "${title}" from Gulls Gallery. Is it available?`;
+
+    window.open("https://ig.me/m/gulls_gallery", "_blank");
+
+    navigator.clipboard.writeText(message)
+        .then(() => {
+            alert("Your inquiry message has been copied! Paste it into our Instagram DM.");
+        })
+        .catch(() => {
+            alert("Instagram opened! Please ask about " + title + " in your message.");
+        });
 }
+
 
 loadPaintings();
 </script>
