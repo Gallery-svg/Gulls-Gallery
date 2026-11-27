@@ -119,6 +119,12 @@ main{margin:15px auto}
 <div id="sets">Loading sets...</div>
 </div>
 
+<div class="card">
+<h2>Customer Reviews</h2>
+<p><small>Review submissions stay hidden from visitors until you approve them.</small></p>
+<div id="reviews">Loading reviews...</div>
+</div>
+
 <button id="logout" class="secondary">Sign Out</button>
 </section>
 </main>
@@ -149,6 +155,7 @@ function showDashboard(){
   dashboard.style.display="block";
   loadPaintings();
   loadSets();
+  loadReviewsAdmin();
 }
 
 async function checkLogin(){
@@ -507,6 +514,36 @@ async function deleteSet(id) {
     if (storageError) console.error("Set image cleanup failed:", storageError.message);
   }
   await loadSets();
+}
+
+
+async function loadReviewsAdmin(){
+  const container=document.getElementById("reviews");
+  container.textContent="Loading reviews...";
+  const {data,error}=await db.from("artwork_reviews").select("*").order("created_at",{ascending:false});
+  if(error){container.textContent="Could not load reviews: "+error.message+" (Run the reviews SQL setup first.)";return;}
+  if(!data||!data.length){container.textContent="No customer reviews submitted yet.";return;}
+  container.innerHTML=data.map(review=>`
+    <div class="card" style="border:1px solid #e7e0d5;margin:12px 0;padding:15px">
+      <strong>${escapeHTML(review.reviewer_name||"Guest")}</strong>
+      <span style="float:right;color:#9b6b28">${"★".repeat(Number(review.rating)||0)}${"☆".repeat(5-(Number(review.rating)||0))}</span>
+      <p><small>${escapeHTML(review.artwork_kind)} · ${escapeHTML(review.artwork_id)} · ${new Date(review.created_at).toLocaleString()}</small></p>
+      <p>${escapeHTML(review.review_text)}</p>
+      <p><strong>${review.is_published?"Published":"Pending approval"}</strong></p>
+      <button class="secondary" onclick="moderateReview('${review.id}',${!review.is_published})">${review.is_published?"Hide review":"Approve review"}</button>
+      <button class="danger" onclick="deleteReview('${review.id}')">Delete</button>
+    </div>`).join("");
+}
+async function moderateReview(id,publish){
+  const {error}=await db.from("artwork_reviews").update({is_published:publish}).eq("id",id);
+  if(error){alert("Could not update review: "+error.message);return;}
+  await loadReviewsAdmin();
+}
+async function deleteReview(id){
+  if(!confirm("Delete this review permanently?"))return;
+  const {error}=await db.from("artwork_reviews").delete().eq("id",id);
+  if(error){alert("Could not delete review: "+error.message);return;}
+  await loadReviewsAdmin();
 }
 
 db.auth.onAuthStateChange((_event,session)=>{
