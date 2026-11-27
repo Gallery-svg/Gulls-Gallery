@@ -378,6 +378,7 @@ function openDetails(kind,id) {
   }));
   document.getElementById("detail-inquire").textContent=kind==="set"?"INQUIRE ABOUT COMPLETE SET":"INQUIRE ABOUT THIS ARTWORK";
   renderMoreArtworks(kind,id);
+  loadReviews(kind,id);
   history.replaceState(null,"", "#artwork="+kind+":"+encodeURIComponent(id));
   modal.classList.add("open");document.body.style.overflow="hidden";
   document.querySelector("#detail-modal .modal-panel").scrollTop=0;
