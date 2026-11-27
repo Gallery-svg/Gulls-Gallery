@@ -116,6 +116,8 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
 @media(max-width:620px){.site-header{align-items:flex-start;flex-direction:column;padding:12px 5%;gap:10px}.brand{font-size:27px}.brand small{font-size:12px}.nav{width:100%;justify-content:space-between;gap:5px}.nav a{font-size:10px}.nav a:first-child{padding:9px 12px}.collection{padding:35px 5% 125px}.section-head h2{font-size:38px;gap:8px}.section-head h2:before,.section-head h2:after{width:8vw}.section-head p{font-size:17px}.toolbar{display:flex;flex-direction:column;align-items:stretch;gap:13px}.filters{overflow-x:auto;flex-wrap:nowrap}.filter{white-space:nowrap;padding:11px 16px;font-size:13px}.sort-wrap{border-left:0;padding-left:0;justify-content:flex-end}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 11px}.product-meta{padding:10px}.product-meta h3{font-size:17px}.product-price{font-size:15px}.view-detail{width:36px;height:36px}.product-image{aspect-ratio:4/4.6}.product-type{font-size:9px;padding:7px 10px}.collection:after{height:95px}.modal{padding:10px;align-items:center}.modal-panel{display:flex;flex-direction:column;max-height:94vh}.detail-copy{order:2;padding:20px}.detail-gallery{order:1}.detail-main{height:270px}.detail-copy h2{font-size:28px}.detail-price{font-size:20px}.modal-close{position:absolute;top:8px;right:8px}}
 
 
+.detail-more{grid-column:1/-1;padding:58px clamp(20px,5vw,76px) 76px;background:#fff0df;border-top:1px solid #e4c9a7}.more-heading{text-align:center;margin:0 auto 30px}.more-heading h2{font:400 clamp(30px,4vw,44px) var(--serif);color:#70101b;margin:10px 0}.more-heading p{font:13px/1.7 var(--sans);color:var(--muted);margin:0}.more-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;max-width:1400px;margin:0 auto}.more-card{min-width:0;cursor:pointer;background:#fff8ed;border:1px solid #dfbd96;padding:7px;transition:transform .2s,box-shadow .2s}.more-card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(70,35,20,.12)}.more-card img{width:100%;height:220px;display:block;object-fit:cover;background:#f0dfca}.more-card h3{font:18px var(--serif);margin:12px 8px 5px;color:#321b17}.more-card p{font:12px var(--sans);margin:0 8px 10px;color:#8c101c}
+
 /* Full-page artwork detail view: opaque page, not a blurred popup */
 #detail-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:stretch;justify-content:stretch;padding:0;background:#fff3e4;backdrop-filter:none;overflow-y:auto}
 #detail-modal.open{display:flex}
@@ -130,6 +132,7 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
 #detail-modal .inquire{margin-top:25px;min-height:54px}
 #detail-modal .modal-close{position:fixed;top:22px;right:26px;width:48px;height:48px;border-radius:50%;background:#fffaf2;border:1px solid #d5b48c;font-size:30px;box-shadow:0 3px 12px rgba(60,30,15,.12)}
 @media(max-width:700px){
+ .detail-more{padding:38px 16px 52px}.more-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.more-card img{height:165px}.more-card h3{font-size:16px}
  #detail-modal .modal-panel{display:flex;flex-direction:column;height:auto;min-height:100dvh;overflow:visible}
  #detail-modal .detail-gallery{min-height:0;padding:66px 14px 14px}
  #detail-modal .detail-main{height:52vh;height:52dvh;min-height:260px;max-height:560px}
@@ -174,6 +177,7 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
     <button class="modal-close" id="modal-close" aria-label="Close details">×</button>
     <div class="detail-gallery"><img id="detail-main-image" class="detail-main" src="" alt=""><div id="detail-thumbs" class="detail-thumbs"></div></div>
     <div class="detail-copy"><div class="eyebrow" id="detail-type">Original artwork</div><h2 id="detail-title"></h2><div class="detail-price" id="detail-price"></div><div class="detail-description" id="detail-description"></div><div class="detail-facts" id="detail-facts"></div><button class="inquire" id="detail-inquire">INQUIRE ABOUT THIS ARTWORK</button><div class="detail-note">No online checkout. Contact us directly to ask about this piece.</div></div>
+    <section class="detail-more" aria-label="More artwork"><div class="more-heading"><span class="eyebrow">Keep exploring</span><h2>More to Explore</h2><p>Discover more pieces from Gulls Gallery</p></div><div class="more-grid" id="detail-more-grid"></div></section>
   </div>
 </div>
 
@@ -258,6 +262,21 @@ function attachCardEvents(container) {
     card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
   });
 }
+function renderMoreArtworks(currentKind,currentId) {
+  const related=[...paintings.map(item=>({kind:"painting",item})),...sets.map(item=>({kind:"set",item}))]
+    .filter(({kind,item})=>!(kind===currentKind&&String(item.id)===String(currentId)))
+    .sort((a,b)=>new Date(b.item.created_at||0)-new Date(a.item.created_at||0))
+    .slice(0,8);
+  const container=document.getElementById("detail-more-grid");
+  if(!related.length){container.innerHTML='<p class="detail-note">More artwork will appear here as the collection grows.</p>';return;}
+  container.innerHTML=related.map(({kind,item})=>{
+    const image=kind==="set"?artworkImages(item,"set")[0]:getImageURL(item.image_path);
+    return '<article class="more-card" role="button" tabindex="0" data-kind="'+kind+'" data-id="'+escapeHTML(item.id)+'" aria-label="View '+escapeHTML(item.title)+'">'+
+      (image?'<img src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.title)+'" loading="lazy">':'<div class="more-card-image"></div>')+
+      '<h3>'+escapeHTML(item.title)+'</h3><p>'+escapeHTML(formatPrice(item.price,item.currency))+'</p></article>';
+  }).join("");
+  attachCardEvents(container);
+}
 function openDetails(kind,id) {
   const item=(kind==="set"?sets:paintings).find(x=>String(x.id)===String(id));
   if(!item)return;
@@ -279,7 +298,9 @@ function openDetails(kind,id) {
     document.querySelectorAll("[data-image-index]").forEach(b=>b.classList.toggle("active",b===button));
   }));
   document.getElementById("detail-inquire").textContent=kind==="set"?"INQUIRE ABOUT COMPLETE SET":"INQUIRE ABOUT THIS ARTWORK";
+  renderMoreArtworks(kind,id);
   modal.classList.add("open");document.body.style.overflow="hidden";
+  document.querySelector("#detail-modal .modal-panel").scrollTop=0;
 }
 function closeDetails(){modal.classList.remove("open");document.body.style.overflow="";}
 document.getElementById("modal-close").addEventListener("click",closeDetails);
