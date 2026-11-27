@@ -1,561 +1,201 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Gulls Gallery | Original Art</title>
-<meta name="description" content="Discover original paintings at Gulls Gallery. Explore unique artwork and inquire about international purchases.">
-
+<meta name="theme-color" content="#f7f5f0">
+<title>Gulls Gallery | Art, Curated</title>
+<meta name="description" content="Discover original handmade paintings and curated art sets at Gulls Gallery. Explore each artwork and inquire directly.">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: #f8f6f1;
-  color: #25251f;
-  font-family: Georgia, serif;
-}
-
-header {
-  padding: 24px 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #dedbd3;
-  position: sticky;
-  top: 0;
-  background: #f8f6f1;
-  z-index: 10;
-}
-
-.logo {
-  font-size: 23px;
-  letter-spacing: 3px;
-}
-
-nav {
-  display: flex;
-  gap: 25px;
-}
-
-nav a {
-  text-decoration: none;
-  color: #333;
-  font: 12px Arial, sans-serif;
-  letter-spacing: 1px;
-}
-
-nav a:hover { color: #a58b62; }
-
-.hero {
-  min-height: 570px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 70px 20px;
-}
-
-.tagline {
-  font: 11px Arial, sans-serif;
-  letter-spacing: 5px;
-  color: #8d806b;
-  margin-bottom: 25px;
-}
-
-.hero h1 {
-  font-size: clamp(48px, 8vw, 88px);
-  font-weight: normal;
-  letter-spacing: 4px;
-}
-
-.hero p {
-  margin-top: 22px;
-  color: #777;
-  line-height: 1.9;
-  font-size: 17px;
-}
-
-.btn {
-  display: inline-block;
-  margin-top: 32px;
-  padding: 16px 35px;
-  background: #282820;
-  color: white;
-  text-decoration: none;
-  font: 12px Arial, sans-serif;
-  letter-spacing: 2px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn:hover { background: #8d806b; }
-
-section { padding: 85px 7%; }
-
-.section-title {
-  text-align: center;
-  font-size: 39px;
-  font-weight: normal;
-}
-
-.section-subtitle {
-  text-align: center;
-  color: #888;
-  font: 13px Arial, sans-serif;
-  margin: 15px 0 50px;
-  line-height: 1.8;
-}
-
-
-#set-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
-.set-card { background:#fff; border:1px solid #e7e3da; overflow:hidden; }
-.set-gallery { display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; background:#eae7df; padding:8px; }
-.set-gallery img { flex:0 0 78%; width:78%; height:300px; object-fit:cover; scroll-snap-align:start; }
-.set-info { padding:22px; }
-.set-info h3 { font-size:22px; font-weight:normal; }
-.set-info p { color:#888; font:13px Arial,sans-serif; margin-top:10px; line-height:1.7; }
-.set-price { font:16px Arial,sans-serif; margin-top:17px; color:#806a48; }
-.set-info button { width:100%; margin-top:18px; padding:13px; border:1px solid #282820; background:transparent; cursor:pointer; font:11px Arial,sans-serif; letter-spacing:1px; }
-.set-info button:hover { background:#282820; color:white; }
-#set-status { text-align:center; font:13px Arial,sans-serif; color:#888; margin:20px; }
-@media(max-width:800px) { #set-grid { grid-template-columns:1fr; } }
-
-#painting-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 28px;
-}
-
-.painting-card {
-  background: #fff;
-  overflow: hidden;
-  border: 1px solid #e7e3da;
-}
-
-.painting-card img {
-  width: 100%;
-  height: 330px;
-  object-fit: cover;
-  display: block;
-  background: #eae7df;
-}
-
-.painting-info { padding: 22px; }
-
-.painting-info h3 {
-  font-size: 21px;
-  font-weight: normal;
-}
-
-.painting-info p {
-  color: #888;
-  font: 13px Arial, sans-serif;
-  margin-top: 10px;
-  line-height: 1.7;
-}
-
-.price {
-  font: 16px Arial, sans-serif;
-  margin-top: 17px;
-  color: #806a48;
-}
-
-.painting-info button {
-  width: 100%;
-  margin-top: 18px;
-  padding: 13px;
-  border: 1px solid #282820;
-  background: transparent;
-  cursor: pointer;
-  font: 11px Arial, sans-serif;
-  letter-spacing: 1px;
-}
-
-.painting-info button:hover {
-  background: #282820;
-  color: white;
-}
-
-.empty-shop {
-  border: 1px solid #dedbd3;
-  padding: 75px 20px;
-  text-align: center;
-  grid-column: 1 / -1;
-}
-
-.empty-shop h3 {
-  font-size: 25px;
-  font-weight: normal;
-}
-
-.empty-shop p {
-  margin-top: 15px;
-  color: #888;
-  font: 13px Arial, sans-serif;
-  line-height: 1.8;
-}
-
-#shop-status {
-  text-align: center;
-  font: 13px Arial, sans-serif;
-  color: #888;
-  margin: 20px;
-}
-
-.about {
-  background: #eeece5;
-  text-align: center;
-}
-
-.about p {
-  max-width: 650px;
-  margin: 25px auto 0;
-  color: #777;
-  line-height: 2;
-  font-size: 16px;
-}
-
-.contact { text-align: center; }
-
-.contact p {
-  color: #888;
-  font: 13px Arial, sans-serif;
-  line-height: 1.8;
-}
-
-footer {
-  padding: 30px;
-  text-align: center;
-  border-top: 1px solid #dedbd3;
-  color: #888;
-  font: 12px Arial, sans-serif;
-}
-
-@media(max-width: 800px) {
-  #painting-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media(max-width: 550px) {
-  header {
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  nav { gap: 15px; }
-  nav a { font-size: 10px; }
-
-  .hero { min-height: 450px; }
-
-  section { padding: 65px 6%; }
-
-  #painting-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .painting-card img { height: 300px; }
-}
+:root{--paper:#f7f5f0;--white:#fffefa;--ink:#292821;--muted:#77746c;--line:#e5e1d8;--gold:#9b8059;--serif:Georgia,'Times New Roman',serif;--sans:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif)}button,input{font:inherit}button,a{-webkit-tap-highlight-color:transparent}
+.site-header{height:78px;padding:0 6.5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:rgba(247,245,240,.96);position:sticky;top:0;z-index:20;backdrop-filter:blur(12px)}
+.brand{font-size:20px;letter-spacing:4px;text-decoration:none;color:var(--ink);white-space:nowrap}.brand small{display:block;font:9px var(--sans);letter-spacing:3px;color:var(--gold);margin-top:5px}
+.nav{display:flex;gap:30px}.nav a{color:var(--ink);text-decoration:none;font:10px var(--sans);letter-spacing:1.7px}.nav a:hover{color:var(--gold)}
+.hero{padding:94px 7% 88px;text-align:center;max-width:1000px;margin:auto}.eyebrow{font:10px var(--sans);letter-spacing:4px;text-transform:uppercase;color:var(--gold)}.hero h1{font-size:clamp(48px,8vw,88px);font-weight:400;letter-spacing:-2px;line-height:1.02;margin:23px 0 20px}.hero p{max-width:540px;margin:0 auto;color:var(--muted);font-size:16px;line-height:1.9}.text-link{display:inline-flex;gap:12px;align-items:center;margin-top:30px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:9px;font:10px var(--sans);letter-spacing:2px;text-transform:uppercase}
+.collection{padding:62px 6.5% 90px;max-width:1600px;margin:auto}.section-head{text-align:center;margin-bottom:34px}.section-head .eyebrow{margin-bottom:14px}.section-head h2{font-size:clamp(32px,4vw,46px);font-weight:400;margin:0}.section-head p{font:13px/1.8 var(--sans);color:var(--muted);margin:13px auto 0;max-width:520px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 28px;flex-wrap:wrap}.search-wrap{position:relative;flex:1;max-width:360px}.search-wrap span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8b877e;font:16px var(--sans)}.search{width:100%;padding:13px 14px 13px 40px;border:1px solid var(--line);background:var(--white);outline:none;font:12px var(--sans);color:var(--ink)}.search:focus{border-color:var(--gold)}.filters{display:flex;gap:8px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:transparent;padding:10px 15px;color:var(--muted);font:10px var(--sans);letter-spacing:1px;cursor:pointer}.filter.active,.filter:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 22px}.product-card{min-width:0;cursor:pointer}.product-image{position:relative;background:#ebe8e0;overflow:hidden;aspect-ratio:4/4.7}.product-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.2,.7,.2,1)}.product-card:hover .product-image img{transform:scale(1.035)}.product-type{position:absolute;top:14px;left:14px;background:rgba(255,254,250,.92);padding:8px 10px;font:9px var(--sans);letter-spacing:1.4px;text-transform:uppercase}.product-meta{padding:16px 2px 0}.product-meta h3{font-size:19px;font-weight:400;margin:0}.product-meta p{font:11px/1.7 var(--sans);color:var(--muted);margin:8px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px}.product-price{font:12px var(--sans);color:var(--gold)}.view-detail{font:9px var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--gold);padding-bottom:4px}
+.status,.empty{grid-column:1/-1;text-align:center;padding:52px 15px;color:var(--muted);font:13px/1.8 var(--sans)}
+.set-section{background:#eeece5;max-width:none;padding-left:6.5%;padding-right:6.5%}.set-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}.set-card{background:var(--white);cursor:pointer}.set-gallery{display:flex;gap:7px;padding:8px;overflow-x:auto;scroll-snap-type:x mandatory;background:#e9e6de}.set-gallery img{flex:0 0 78%;width:78%;height:320px;object-fit:cover;scroll-snap-align:start}.set-copy{padding:21px 23px 24px}.set-copy h3{font-size:23px;font-weight:400;margin:0}.set-copy p{font:12px/1.8 var(--sans);color:var(--muted);margin:10px 0}.set-copy .product-bottom{margin-top:16px}
+.about{padding:90px 7%;text-align:center;background:var(--paper)}.about p{max-width:620px;margin:20px auto 0;color:var(--muted);font-size:15px;line-height:2}.contact{padding:72px 7%;text-align:center;background:#e9e6de}.contact p{font:13px/1.8 var(--sans);color:var(--muted);max-width:500px;margin:15px auto}.contact a{display:inline-block;margin-top:18px;padding:15px 24px;background:var(--ink);color:white;text-decoration:none;font:10px var(--sans);letter-spacing:1.5px}
+footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);letter-spacing:1px;border-top:1px solid var(--line)}
+/* Artwork details */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(27,26,22,.62);display:none;align-items:center;justify-content:center;padding:24px}.modal.open{display:flex}.modal-panel{position:relative;background:var(--white);width:min(100%,1000px);max-height:92vh;overflow:auto;display:grid;grid-template-columns:1.05fr .95fr}.modal-close{position:absolute;right:15px;top:13px;width:38px;height:38px;border:0;background:rgba(255,254,250,.92);font:25px var(--sans);cursor:pointer;z-index:2}.detail-gallery{background:#ebe8e0;min-width:0}.detail-main{width:100%;height:500px;object-fit:contain;display:block;background:#ebe8e0}.detail-thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto}.detail-thumbs button{border:1px solid transparent;background:none;padding:0;flex:0 0 70px;height:70px;cursor:pointer}.detail-thumbs button.active{border-color:var(--gold)}.detail-thumbs img{width:100%;height:100%;object-fit:cover}.detail-copy{padding:58px 42px 40px;display:flex;flex-direction:column;align-items:flex-start}.detail-copy .eyebrow{margin-bottom:18px}.detail-copy h2{font-size:clamp(28px,4vw,40px);font-weight:400;line-height:1.15;margin:0}.detail-price{font:16px var(--sans);color:var(--gold);margin:19px 0}.detail-description{font:13px/1.9 var(--sans);color:var(--muted);white-space:pre-line}.detail-facts{width:100%;margin:23px 0;border-top:1px solid var(--line)}.fact{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line);font:11px var(--sans)}.fact span:first-child{color:var(--muted)}.inquire{margin-top:auto;width:100%;padding:17px 18px;border:0;background:var(--ink);color:white;cursor:pointer;font:10px var(--sans);letter-spacing:1.6px}.inquire:hover{background:var(--gold)}.detail-note{font:10px/1.6 var(--sans);color:var(--muted);margin-top:12px;text-align:center;width:100%}
+@media(max-width:900px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal-panel{grid-template-columns:1fr 1fr}.detail-main{height:420px}.detail-copy{padding:52px 26px 28px}}
+@media(max-width:620px){.site-header{height:auto;min-height:70px;padding:15px 5%;gap:12px}.brand{font-size:16px;letter-spacing:3px}.brand small{font-size:8px}.nav{gap:13px}.nav a{font-size:9px;letter-spacing:.8px}.hero{padding:75px 7% 65px}.hero h1{letter-spacing:-1px}.collection{padding:54px 5% 68px}.toolbar{align-items:stretch}.search-wrap{max-width:none;flex-basis:100%}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.product-grid{gap:25px 12px}.product-image{aspect-ratio:4/4.8}.product-meta{padding-top:12px}.product-meta h3{font-size:16px}.product-meta p{font-size:10px}.product-price{font-size:11px}.view-detail{font-size:8px}.set-section{padding-left:5%;padding-right:5%}.set-grid{grid-template-columns:1fr}.set-gallery img{height:260px}.modal{padding:0;align-items:flex-end}.modal-panel{width:100%;max-height:95vh;display:block}.detail-main{height:340px}.detail-copy{padding:27px 23px 25px}.detail-copy h2{font-size:30px}.modal-close{position:fixed;top:12px;right:12px}.inquire{margin-top:25px}}
+@media(max-width:390px){.nav{gap:9px}.nav a{font-size:8px}.product-grid{grid-template-columns:1fr}.product-image{aspect-ratio:4/4.2}}
 </style>
 </head>
-
 <body>
-
-<header>
-  <div class="logo">GULLS GALLERY</div>
-
-  <nav>
-    <a href="#home">HOME</a>
-    <a href="#shop">SHOP</a>
-    <a href="#sets">SETS</a>
-    <a href="#about">ABOUT</a>
-    <a href="#contact">CONTACT</a>
+<header class="site-header">
+  <a class="brand" href="#home">GULLS GALLERY<small>ART · CREATIVITY · EXPRESSION</small></a>
+  <nav class="nav" aria-label="Main navigation">
+    <a href="#collection">COLLECTION</a><a href="#sets">ART SETS</a><a href="#about">ABOUT</a><a href="#contact">CONTACT</a>
   </nav>
 </header>
-
 <main>
-
-<section class="hero" id="home">
-  <div class="tagline">ART · CREATIVITY · EXPRESSION</div>
-
-  <h1>Gulls Gallery</h1>
-
-  <p>
-    Discover art that tells a story.<br>
-    Original paintings, made to be appreciated.
-  </p>
-
-  <a href="#shop" class="btn">EXPLORE THE COLLECTION</a>
-</section>
-
-<section id="sets">
-  <h2 class="section-title">Art Sets</h2>
-  <p class="section-subtitle">Explore curated collections. Each set is sold as one complete collection.</p>
-  <div id="set-status">Loading sets...</div>
-  <div id="set-grid"></div>
-</section>
-
-<section id="shop">
-  <h2 class="section-title">The Collection</h2>
-
-  <p class="section-subtitle">
-    Explore our collection of original artwork.
-  </p>
-
-  <div id="shop-status">Loading paintings...</div>
-
-  <div id="painting-grid">
-  </div>
-</section>
-
-<section class="about" id="about">
-  <h2 class="section-title">Our Story</h2>
-
-  <p>
-    Welcome to Gulls Gallery, a place where creativity
-    meets expression. Discover original paintings and
-    artwork that bring beauty and character to every space.
-  </p>
-</section>
-
-<section class="contact" id="contact">
-  <h2 class="section-title">Get in Touch</h2>
-
-  <p class="section-subtitle">
-    Interested in a painting? Contact us about purchasing
-    and international shipping.
-  </p>
-
-  <p>
-    For painting inquiries, please contact us through our
-    official contact details.
-  </p>
-</section>
-
+  <section class="hero" id="home">
+    <div class="eyebrow">A considered collection of original art</div>
+    <h1>Art, with a story<br>to tell.</h1>
+    <p>Discover handmade paintings and thoughtfully curated art sets, created to bring character and meaning into your space.</p>
+    <a class="text-link" href="#collection">Explore the collection <span aria-hidden="true">↘</span></a>
+  </section>
+  <section class="collection" id="collection">
+    <div class="section-head"><div class="eyebrow">The gallery</div><h2>Explore the Collection</h2><p>Find a piece that speaks to you. Select any artwork to explore its details.</p></div>
+    <div class="toolbar">
+      <label class="search-wrap"><span>⌕</span><input id="search-input" class="search" type="search" placeholder="Search artworks..." aria-label="Search artworks"></label>
+      <div class="filters" id="category-filters"><button class="filter active" data-category="all">ALL ARTWORK</button></div>
+    </div>
+    <div id="shop-status" class="status">Loading the collection...</div>
+    <div id="painting-grid" class="product-grid"></div>
+  </section>
+  <section class="collection set-section" id="sets">
+    <div class="section-head"><div class="eyebrow">Collected together</div><h2>Art Sets</h2><p>Curated collections, offered as one complete set. Swipe through the photographs to see every piece.</p></div>
+    <div id="set-status" class="status">Loading art sets...</div>
+    <div id="set-grid" class="set-grid"></div>
+  </section>
+  <section class="about" id="about"><div class="eyebrow">A little about us</div><h2 class="section-head" style="margin:12px 0 0">Our Story</h2><p>Welcome to Gulls Gallery, a place where creativity meets expression. Discover original handmade paintings and carefully presented art that bring beauty and character to every space.</p></section>
+  <section class="contact" id="contact"><div class="eyebrow">Start a conversation</div><h2 class="section-head" style="margin:12px 0 0">Interested in a piece?</h2><p>Ask us about artwork availability, pricing or delivery. We will be happy to help you find the right piece.</p><a href="https://ig.me/m/gulls_gallery" target="_blank" rel="noopener">CONTACT US ON INSTAGRAM</a></section>
 </main>
+<footer>© 2026 Gulls Gallery. All rights reserved.</footer>
 
-<footer>
-  © 2026 Gulls Gallery. All rights reserved.
-</footer>
+<div class="modal" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+  <div class="modal-panel">
+    <button class="modal-close" id="modal-close" aria-label="Close details">×</button>
+    <div class="detail-gallery"><img id="detail-main-image" class="detail-main" src="" alt=""><div id="detail-thumbs" class="detail-thumbs"></div></div>
+    <div class="detail-copy"><div class="eyebrow" id="detail-type">Original artwork</div><h2 id="detail-title"></h2><div class="detail-price" id="detail-price"></div><div class="detail-description" id="detail-description"></div><div class="detail-facts" id="detail-facts"></div><button class="inquire" id="detail-inquire">INQUIRE ABOUT THIS ARTWORK</button><div class="detail-note">No online checkout. Contact us directly to ask about this piece.</div></div>
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL =
-  "https://opxrtjbpwoeqiqrifhfp.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+const SUPABASE_URL = "https://opxrtjbpwoeqiqrifhfp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const grid = document.getElementById("painting-grid");
 const status = document.getElementById("shop-status");
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-function getImageURL(path) {
-  if (!path) return "";
-
-  if (path.startsWith("https://") || path.startsWith("http://")) {
-    return path;
-  }
-
-  const cleanPath = path.replace(/^\/+/, "");
-
-  return supabaseClient.storage
-    .from("painting")
-    .getPublicUrl(cleanPath).data.publicUrl;
-}
-
-function formatPrice(price, currency) {
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency || "USD"
-    }).format(Number(price));
-  } catch {
-    return `${currency || "USD"} ${price}`;
-  }
-}
-
-function showEmptyShop() {
-  grid.innerHTML = `
-    <div class="empty-shop">
-      <h3>Something beautiful is coming.</h3>
-      <p>
-        Our collection is waiting to be discovered.
-        Check back soon for original paintings.
-      </p>
-    </div>
-  `;
-}
-
-
 const setGrid = document.getElementById("set-grid");
 const setStatus = document.getElementById("set-status");
+const modal = document.getElementById("detail-modal");
+const detailMainImage = document.getElementById("detail-main-image");
+let paintings = [];
+let sets = [];
+let selectedCategory = "all";
+let activeDetail = null;
+let activeImages = [];
 
-async function loadSets() {
-  const { data, error } = await supabaseClient
-    .from("painting_sets")
-    .select("*")
-    .eq("status", "available")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Sets could not be loaded:", error);
-    setStatus.textContent = "Sets are temporarily unavailable.";
-    return;
-  }
-  if (!data || data.length === 0) {
-    setStatus.textContent = "No sets available yet.";
-    setGrid.innerHTML = "";
-    return;
-  }
-
-  setStatus.textContent = "";
-  setGrid.innerHTML = data.map(set => {
-    const paths = Array.isArray(set.image_paths) ? set.image_paths : [];
-    const images = paths.map((path, i) => {
-      const url = getImageURL(path);
-      return `<img src="${escapeHTML(url)}" alt="${escapeHTML(set.title)} — image ${i + 1}" loading="lazy">`;
-    }).join("");
-    return `
-      <article class="set-card">
-        <div class="set-gallery" aria-label="Swipe to view all paintings in this set">${images}</div>
-        <div class="set-info">
-          <h3>${escapeHTML(set.title)}</h3>
-          <p>${escapeHTML(set.description)}</p>
-          <div class="set-price">${escapeHTML(formatPrice(set.price, set.currency))}</div>
-          <button onclick="contactAboutSet('${encodeURIComponent(set.title)}')">INQUIRE ABOUT COMPLETE SET</button>
-        </div>
-      </article>`;
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+}
+function getImageURL(path) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return supabaseClient.storage.from("painting").getPublicUrl(path.replace(/^\/+/, "")).data.publicUrl;
+}
+function formatPrice(price, currency) {
+  try { return new Intl.NumberFormat("en-US",{style:"currency",currency:currency||"USD"}).format(Number(price)); }
+  catch { return `${currency||"USD"} ${price}`; }
+}
+function artworkImages(item,type) {
+  if(type==="set") return (Array.isArray(item.image_paths)?item.image_paths:[]).map(getImageURL).filter(Boolean);
+  return item.image_path ? [getImageURL(item.image_path)] : [];
+}
+function renderFilters() {
+  const categories=[...new Set(paintings.map(p=>p.category).filter(Boolean))].sort();
+  document.getElementById("category-filters").innerHTML =
+    '<button class="filter '+(selectedCategory==="all"?"active":"")+'" data-category="all">ALL ARTWORK</button>'+
+    categories.map(c=>'<button class="filter '+(selectedCategory===c?"active":"")+'" data-category="'+escapeHTML(c)+'">'+escapeHTML(c.toUpperCase())+'</button>').join("");
+  document.querySelectorAll(".filter").forEach(button=>button.addEventListener("click",()=>{
+    selectedCategory=button.dataset.category;renderFilters();renderPaintings();
+  }));
+}
+function renderPaintings() {
+  const term=document.getElementById("search-input").value.trim().toLowerCase();
+  const filtered=paintings.filter(p=>{
+    const matchesCategory=selectedCategory==="all"||p.category===selectedCategory;
+    const haystack=[p.title,p.description,p.category,p.medium,p.dimensions].join(" ").toLowerCase();
+    return matchesCategory&&haystack.includes(term);
+  });
+  if(!filtered.length){grid.innerHTML='<div class="empty">No artwork matches your search. Try another name or category.</div>';return;}
+  grid.innerHTML=filtered.map(p=>{
+    const image=getImageURL(p.image_path);
+    return '<article class="product-card" role="button" tabindex="0" data-kind="painting" data-id="'+escapeHTML(p.id)+'" aria-label="View details for '+escapeHTML(p.title)+'">'+
+      '<div class="product-image">'+(image?'<img src="'+escapeHTML(image)+'" alt="'+escapeHTML(p.title)+'" loading="lazy">':'')+
+      (p.category?'<span class="product-type">'+escapeHTML(p.category)+'</span>':'')+'</div>'+
+      '<div class="product-meta"><h3>'+escapeHTML(p.title)+'</h3><p>'+escapeHTML(p.description)+'</p>'+
+      '<div class="product-bottom"><span class="product-price">'+escapeHTML(formatPrice(p.price,p.currency))+'</span><span class="view-detail">VIEW DETAILS ↗</span></div></div></article>';
   }).join("");
+  attachCardEvents(grid);
 }
-
-function contactAboutSet(encodedTitle) {
-  const title = decodeURIComponent(encodedTitle);
-  const message = `Hi! I'm interested in purchasing the complete "${title}" set from Gulls Gallery. Is it available?`;
-  window.open("https://ig.me/m/gulls_gallery", "_blank");
-  navigator.clipboard.writeText(message)
-    .then(() => alert("Your complete-set inquiry message has been copied! Paste it into our Instagram DM."))
-    .catch(() => alert("Instagram opened! Please ask about the complete " + title + " set."));
-}
-
-async function loadPaintings() {
-  status.textContent = "Loading paintings...";
-
-  const { data, error } = await supabaseClient
-    .from("paintings")
-    .select("*")
-    .eq("status", "available")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Supabase error:", error);
-    status.textContent =
-      "We couldn't load the collection. Please try again later.";
-    showEmptyShop();
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    status.textContent = "";
-    showEmptyShop();
-    return;
-  }
-
-  status.textContent = "";
-
-  grid.innerHTML = data.map(painting => {
-    const imageURL = getImageURL(painting.image_path);
-
-    return `
-      <article class="painting-card">
-        <img
-          src="${escapeHTML(imageURL)}"
-          alt="${escapeHTML(painting.title)}"
-          loading="lazy"
-        >
-
-        <div class="painting-info">
-          <h3>${escapeHTML(painting.title)}</h3>
-
-          <p>${escapeHTML(painting.description)}</p>
-
-          ${painting.category ? `
-            <p>${escapeHTML(painting.category)}</p>
-          ` : ""}
-
-          ${painting.dimensions ? `
-            <p>Dimensions: ${escapeHTML(painting.dimensions)}</p>
-          ` : ""}
-
-          ${painting.medium ? `
-            <p>Medium: ${escapeHTML(painting.medium)}</p>
-          ` : ""}
-
-          <div class="price">
-            ${escapeHTML(formatPrice(
-              painting.price,
-              painting.currency
-            ))}
-          </div>
-
-          <button
-            onclick="contactAboutPainting('${encodeURIComponent(
-              painting.title
-            )}')"
-          >
-            INQUIRE ABOUT THIS PAINTING
-          </button>
-        </div>
-      </article>
-    `;
+function renderSets() {
+  if(!sets.length){setStatus.textContent="New collections will be featured here soon.";setGrid.innerHTML="";return;}
+  setStatus.textContent="";
+  setGrid.innerHTML=sets.map(s=>{
+    const urls=artworkImages(s,"set");
+    const imgs=urls.map((url,i)=>'<img src="'+escapeHTML(url)+'" alt="'+escapeHTML(s.title)+' — image '+(i+1)+'" loading="lazy">').join("");
+    return '<article class="set-card" role="button" tabindex="0" data-kind="set" data-id="'+escapeHTML(s.id)+'" aria-label="View details for '+escapeHTML(s.title)+'">'+
+      '<div class="set-gallery" aria-label="Swipe to view images">'+imgs+'</div><div class="set-copy"><h3>'+escapeHTML(s.title)+'</h3><p>'+escapeHTML(s.description)+'</p>'+
+      '<div class="product-bottom"><span class="product-price">'+escapeHTML(formatPrice(s.price,s.currency))+' · Complete set</span><span class="view-detail">VIEW DETAILS ↗</span></div></div></article>';
   }).join("");
+  attachCardEvents(setGrid);
 }
-
-
-function contactAboutPainting(encodedTitle) {
-    const title = decodeURIComponent(encodedTitle);
-
-    const message = `Hi! I'm interested in purchasing "${title}" from Gulls Gallery. Is it available?`;
-
-    window.open("https://ig.me/m/gulls_gallery", "_blank");
-
-    navigator.clipboard.writeText(message)
-        .then(() => {
-            alert("Your inquiry message has been copied! Paste it into our Instagram DM.");
-        })
-        .catch(() => {
-            alert("Instagram opened! Please ask about " + title + " in your message.");
-        });
+function attachCardEvents(container) {
+  container.querySelectorAll("[data-kind]").forEach(card=>{
+    const open=()=>openDetails(card.dataset.kind,card.dataset.id);
+    card.addEventListener("click",open);
+    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+  });
 }
-
-
-loadSets();
-loadPaintings();
+function openDetails(kind,id) {
+  const item=(kind==="set"?sets:paintings).find(x=>String(x.id)===String(id));
+  if(!item)return;
+  activeDetail={kind,item};
+  activeImages=artworkImages(item,kind);
+  detailMainImage.src=activeImages[0]||"";
+  detailMainImage.alt=item.title||"Artwork";
+  document.getElementById("detail-type").textContent=kind==="set"?"Curated art set":"Original artwork";
+  document.getElementById("detail-title").textContent=item.title||"Untitled";
+  document.getElementById("detail-price").textContent=formatPrice(item.price,item.currency)+(kind==="set"?" · Complete set":"");
+  document.getElementById("detail-description").textContent=item.description||"Please contact us for more information about this artwork.";
+  const facts=[];
+  if(kind==="set")facts.push(["Collection","Sold as one complete set"],["Number of pieces",String(activeImages.length)]);
+  else {if(item.dimensions)facts.push(["Dimensions",item.dimensions]);if(item.medium)facts.push(["Medium",item.medium]);if(item.category)facts.push(["Category",item.category]);}
+  document.getElementById("detail-facts").innerHTML=facts.map(([k,v])=>'<div class="fact"><span>'+escapeHTML(k)+'</span><span>'+escapeHTML(v)+'</span></div>').join("");
+  document.getElementById("detail-thumbs").innerHTML=activeImages.map((url,i)=>'<button type="button" class="'+(i===0?"active":"")+'" data-image-index="'+i+'" aria-label="Show image '+(i+1)+'"><img src="'+escapeHTML(url)+'" alt=""></button>').join("");
+  document.querySelectorAll("[data-image-index]").forEach(button=>button.addEventListener("click",()=>{
+    const index=Number(button.dataset.imageIndex);detailMainImage.src=activeImages[index];
+    document.querySelectorAll("[data-image-index]").forEach(b=>b.classList.toggle("active",b===button));
+  }));
+  document.getElementById("detail-inquire").textContent=kind==="set"?"INQUIRE ABOUT COMPLETE SET":"INQUIRE ABOUT THIS ARTWORK";
+  modal.classList.add("open");document.body.style.overflow="hidden";
+}
+function closeDetails(){modal.classList.remove("open");document.body.style.overflow="";}
+document.getElementById("modal-close").addEventListener("click",closeDetails);
+modal.addEventListener("click",e=>{if(e.target===modal)closeDetails();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeDetails();});
+document.getElementById("search-input").addEventListener("input",renderPaintings);
+document.getElementById("detail-inquire").addEventListener("click",()=>{
+  if(!activeDetail)return;
+  const {kind,item}=activeDetail;
+  const message=kind==="set"
+    ? `Hi! I'm interested in purchasing the complete "${item.title}" set from Gulls Gallery. Is it available?`
+    : `Hi! I'm interested in purchasing "${item.title}" from Gulls Gallery. Is it available?`;
+  window.open("https://ig.me/m/gulls_gallery","_blank","noopener");
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(message).then(()=>alert("Your inquiry message has been copied. Paste it into our Instagram chat.")).catch(()=>alert("Instagram opened. Please ask about "+item.title+"."));
+  else alert("Instagram opened. Please ask about "+item.title+".");
+});
+async function loadPaintings(){
+  const {data,error}=await supabaseClient.from("paintings").select("*").eq("status","available").order("created_at",{ascending:false});
+  if(error){console.error("Paintings could not be loaded:",error);status.textContent="The collection is temporarily unavailable.";return;}
+  paintings=data||[];status.textContent="";renderFilters();renderPaintings();
+}
+async function loadSets(){
+  const {data,error}=await supabaseClient.from("painting_sets").select("*").eq("status","available").order("created_at",{ascending:false});
+  if(error){console.error("Sets could not be loaded:",error);setStatus.textContent="Art sets are temporarily unavailable.";return;}
+  sets=data||[];renderSets();
+}
+loadPaintings();loadSets();
 </script>
-
 </body>
 </html>
