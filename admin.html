@@ -91,13 +91,38 @@ main{margin:15px auto}
 <div id="paintings">Loading paintings...</div>
 </div>
 
+<div class="card">
+<h2 id="setFormHeading">Create an Art Set</h2>
+<p><small>Upload as many images as you want. Customers inquire about the complete set, not individual images.</small></p>
+<form id="setForm">
+<label>Set Images (select multiple)</label>
+<input id="setImages" type="file" accept="image/*" multiple>
+<label>Set Title</label>
+<input id="setTitle" required placeholder="e.g. Nature Collection">
+<label>Description</label>
+<textarea id="setDescription" placeholder="Describe this collection"></textarea>
+<label>Total Set Price</label>
+<input id="setPrice" type="number" min="0" step="0.01" required placeholder="1500">
+<label>Currency</label>
+<select id="setCurrency"><option value="PKR">PKR</option><option value="USD">USD</option></select>
+<button id="saveSetButton" type="submit">Create Set</button>
+<button id="cancelSetButton" type="button" class="secondary" style="display:none">Cancel Edit</button>
+</form>
+<p id="setFormMessage" class="status"></p>
+</div>
+
+<div class="card">
+<h2>Your Sets</h2>
+<div id="sets">Loading sets...</div>
+</div>
+
 <button id="logout" class="secondary">Sign Out</button>
 </section>
 </main>
 
 <script>
 const SUPABASE_URL = "https://opxrtjbpwoeqiqrifhfp.supabase.co";
-const SUPABASE_KEY = sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO
+const SUPABASE_KEY = "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO";
 
 const ADMIN_UID = "400db0ba-94ab-4242-bbef-058128b2f06e";
 
@@ -119,6 +144,7 @@ function showDashboard(){
   loginSection.style.display="none";
   dashboard.style.display="block";
   loadPaintings();
+  loadSets();
 }
 
 async function checkLogin(){
@@ -358,6 +384,123 @@ async function deletePainting(id){
   await loadPaintings();
 }
 
+
+let editingSetId = null;
+let originalSetPaths = [];
+
+async function loadSets() {
+  const container = document.getElementById("sets");
+  container.textContent = "Loading sets...";
+  const { data, error } = await db.from("painting_sets")
+    .select("*").order("created_at", { ascending: false });
+  if (error) { container.textContent = "Could not load sets: " + error.message; return; }
+  if (!data || !data.length) { container.textContent = "No sets created yet."; return; }
+
+  container.innerHTML = data.map(set => {
+    const paths = Array.isArray(set.image_paths) ? set.image_paths : [];
+    const firstPath = paths[0] || "";
+    const imageURL = firstPath ? db.storage.from("painting").getPublicUrl(firstPath).data.publicUrl : "";
+    return `
+      <div class="painting">
+        ${imageURL ? `<img src="${escapeHTML(imageURL)}" alt="">` : ""}
+        <div class="details">
+          <strong>${escapeHTML(set.title)}</strong><br>
+          <small>${paths.length} images · ${escapeHTML(set.currency)} ${escapeHTML(set.price)}</small><br>
+          <button class="secondary" onclick="editSet('${set.id}')">Edit</button>
+          <button class="danger" onclick="deleteSet('${set.id}')">Delete</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function resetSetForm() {
+  document.getElementById("setForm").reset();
+  editingSetId = null;
+  originalSetPaths = [];
+  document.getElementById("setFormHeading").textContent = "Create an Art Set";
+  document.getElementById("saveSetButton").textContent = "Create Set";
+  document.getElementById("cancelSetButton").style.display = "none";
+  document.getElementById("setFormMessage").textContent = "";
+  document.getElementById("setImages").required = true;
+}
+document.getElementById("cancelSetButton").addEventListener("click", resetSetForm);
+
+async function editSet(id) {
+  const { data: set, error } = await db.from("painting_sets").select("*").eq("id", id).single();
+  if (error) { alert(error.message); return; }
+  editingSetId = id;
+  originalSetPaths = Array.isArray(set.image_paths) ? set.image_paths : [];
+  document.getElementById("setTitle").value = set.title || "";
+  document.getElementById("setDescription").value = set.description || "";
+  document.getElementById("setPrice").value = set.price ?? "";
+  document.getElementById("setCurrency").value = set.currency || "PKR";
+  document.getElementById("setFormHeading").textContent = "Edit Art Set";
+  document.getElementById("saveSetButton").textContent = "Save Set Changes";
+  document.getElementById("cancelSetButton").style.display = "inline-block";
+  document.getElementById("setImages").required = false;
+  document.getElementById("setForm").scrollIntoView({ behavior: "smooth" });
+}
+
+document.getElementById("setForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const message = document.getElementById("setFormMessage");
+  const files = Array.from(document.getElementById("setImages").files || []);
+  const title = document.getElementById("setTitle").value.trim();
+  const description = document.getElementById("setDescription").value.trim();
+  const price = Number(document.getElementById("setPrice").value);
+  const currency = document.getElementById("setCurrency").value;
+
+  if (!title || !Number.isFinite(price) || price < 0) { message.textContent = "Enter a valid set title and total price."; return; }
+  if (!editingSetId && files.length === 0) { message.textContent = "Please select at least one image for this set."; return; }
+  if (files.some(file => !file.type.startsWith("image/"))) { message.textContent = "Please select image files only."; return; }
+
+  message.textContent = "Uploading images and saving set...";
+  const uploadedPaths = [];
+  for (const file of files) {
+    const extension = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = "sets/" + crypto.randomUUID() + "." + extension;
+    const { error: uploadError } = await db.storage.from("painting").upload(path, file);
+    if (uploadError) {
+      if (uploadedPaths.length) await db.storage.from("painting").remove(uploadedPaths);
+      message.textContent = "Image upload failed: " + uploadError.message;
+      return;
+    }
+    uploadedPaths.push(path);
+  }
+
+  const setData = {
+    title, description, price, currency,
+    image_paths: files.length ? (editingSetId ? [...originalSetPaths, ...uploadedPaths] : uploadedPaths) : originalSetPaths,
+    status: "available"
+  };
+  const result = editingSetId
+    ? await db.from("painting_sets").update(setData).eq("id", editingSetId)
+    : await db.from("painting_sets").insert(setData);
+
+  if (result.error) {
+    if (uploadedPaths.length) await db.storage.from("painting").remove(uploadedPaths);
+    message.textContent = "Could not save set: " + result.error.message;
+    return;
+  }
+  message.textContent = editingSetId ? "Set updated successfully." : "Set created successfully.";
+  resetSetForm();
+  await loadSets();
+});
+
+async function deleteSet(id) {
+  if (!confirm("Delete this complete set and its uploaded images?")) return;
+  const { data: set, error } = await db.from("painting_sets").select("image_paths").eq("id", id).single();
+  if (error) { alert(error.message); return; }
+  const { error: deleteError } = await db.from("painting_sets").delete().eq("id", id);
+  if (deleteError) { alert(deleteError.message); return; }
+  const paths = Array.isArray(set.image_paths) ? set.image_paths : [];
+  if (paths.length) {
+    const { error: storageError } = await db.storage.from("painting").remove(paths);
+    if (storageError) console.error("Set image cleanup failed:", storageError.message);
+  }
+  await loadSets();
+}
+
 db.auth.onAuthStateChange((_event,session)=>{
   if(!session){
     showLogin();
@@ -367,6 +510,7 @@ db.auth.onAuthStateChange((_event,session)=>{
   }
 });
 
+document.getElementById("setImages").required = true;
 checkLogin();
 </script>
 </body>
