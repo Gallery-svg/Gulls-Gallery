@@ -170,6 +170,30 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
 .review-submit{justify-self:start;border:0;border-radius:22px;background:#8c101c;color:white;padding:12px 19px;font:11px var(--sans);cursor:pointer}
 .review-message{font:11px/1.5 var(--sans);color:#70101b;margin:0}
 @media(max-width:700px){#favorites-nav{padding:7px 10px!important;font-size:9px!important}.favorite-toggle{width:36px;height:36px;top:9px;right:9px}.detail-actions{gap:7px}.detail-action{font-size:11px;padding:10px 12px}.reviews-heading h3{font-size:26px}}
+
+/* Natural, single-scroll artwork detail layout */
+#detail-modal{display:none;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+#detail-modal.open{display:block}
+#detail-modal .modal-panel{width:100%;height:auto;min-height:100vh;min-height:100dvh;max-height:none;overflow:visible;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;align-items:start}
+#detail-modal .detail-gallery{min-width:0;min-height:100vh;min-height:100dvh;padding:72px 24px 24px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+#detail-modal .detail-main{display:block;width:100%;height:min(72vh,760px);height:min(72dvh,760px);min-height:280px;max-height:760px;object-fit:contain;padding:10px}
+#detail-modal .detail-thumbs{max-width:100%;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start}
+#detail-modal .detail-copy{min-width:0;min-height:100vh;min-height:100dvh;height:auto;padding:clamp(76px,9vh,110px) clamp(22px,5vw,72px) 56px;justify-content:flex-start;overflow:visible}
+#detail-modal .detail-copy>*{max-width:100%}
+#detail-modal .detail-more{grid-column:1/-1;width:100%;min-width:0}
+#detail-modal .detail-gallery.zoomed{overflow:hidden}
+#detail-modal .detail-gallery.zoomed .detail-main{transform:scale(1.5)}
+@media(max-width:700px){
+  #detail-modal{padding:0}
+  #detail-modal .modal-panel{display:flex;flex-direction:column;width:100%;height:auto;min-height:100vh;min-height:100dvh;overflow:visible}
+  #detail-modal .detail-gallery{order:1;width:100%;min-height:0;height:auto;padding:68px 12px 14px;justify-content:flex-start}
+  #detail-modal .detail-main{width:100%;height:55vh;height:55dvh;min-height:260px;max-height:560px;padding:6px;object-fit:contain}
+  #detail-modal .detail-thumbs{justify-content:flex-start;flex-wrap:nowrap}
+  #detail-modal .detail-copy{order:2;width:100%;min-height:0;height:auto;padding:28px 22px 42px;justify-content:flex-start;overflow:visible}
+  #detail-modal .detail-more{order:3;width:100%;padding:38px 16px 52px}
+  #detail-modal .modal-close{position:fixed;top:12px;right:14px}
+}
+
 </style>
 </head>
 <body>
