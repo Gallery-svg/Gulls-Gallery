@@ -302,7 +302,7 @@ function attachCardEvents(container) {
   container.querySelectorAll(".product-card[data-kind],.more-card[data-kind]").forEach(card=>{
     const open=()=>openDetails(card.dataset.kind,card.dataset.id);
     card.addEventListener("click",open);
-    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+    card.addEventListener("keydown",e=>{if(e.target.closest(".favorite-toggle"))return;if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
   });
   container.querySelectorAll(".favorite-toggle").forEach(button=>button.addEventListener("click",event=>{event.stopPropagation();toggleFavorite(button.dataset.favoriteKind,button.dataset.favoriteId);}));
 }
@@ -332,6 +332,8 @@ function openDetails(kind,id) {
   const item=(kind==="set"?sets:paintings).find(x=>String(x.id)===String(id));
   if(!item)return;
   activeDetail={kind,item};
+  document.querySelector("#detail-modal .detail-gallery").classList.remove("zoomed");
+  document.getElementById("zoom-hint").textContent="Click image to zoom ⤢";
   activeImages=artworkImages(item,kind);
   detailMainImage.src=activeImages[0]||"";
   detailMainImage.alt=item.title||"Artwork";
