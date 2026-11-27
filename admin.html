@@ -362,38 +362,6 @@ form.addEventListener("submit",async e=>{
     if(uploadedPaths.length) await db.storage.from("painting").remove(uploadedPaths);
     message.textContent="Could not save artwork: "+(error.message||String(error));
   }
-  return;
-
-  let saveError;
-
-  if(editingId){
-    const result=await db.from("paintings").update(paintingData)
-      .eq("id",editingId);
-    saveError=result.error;
-  }else{
-    const result=await db.from("paintings").insert(paintingData);
-    saveError=result.error;
-  }
-
-  if(saveError){
-    if(newImagePath) await db.storage.from("painting").remove([newImagePath]);
-    message.textContent=saveError.message;
-    return;
-  }
-
-  if(newImagePath && originalImagePath){
-    const {error:removeError}=await db.storage.from("painting")
-      .remove([originalImagePath]);
-
-    if(removeError){
-      console.error("Old image cleanup failed:",removeError.message);
-    }
-  }
-
-  message.textContent=editingId?"Painting updated successfully!":"Painting uploaded successfully!";
-
-  resetForm();
-  await loadPaintings();
 });
 
 async function deletePainting(id){
