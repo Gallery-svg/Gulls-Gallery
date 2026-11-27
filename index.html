@@ -117,6 +117,20 @@ section { padding: 85px 7%; }
   line-height: 1.8;
 }
 
+
+#set-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
+.set-card { background:#fff; border:1px solid #e7e3da; overflow:hidden; }
+.set-gallery { display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; background:#eae7df; padding:8px; }
+.set-gallery img { flex:0 0 78%; width:78%; height:300px; object-fit:cover; scroll-snap-align:start; }
+.set-info { padding:22px; }
+.set-info h3 { font-size:22px; font-weight:normal; }
+.set-info p { color:#888; font:13px Arial,sans-serif; margin-top:10px; line-height:1.7; }
+.set-price { font:16px Arial,sans-serif; margin-top:17px; color:#806a48; }
+.set-info button { width:100%; margin-top:18px; padding:13px; border:1px solid #282820; background:transparent; cursor:pointer; font:11px Arial,sans-serif; letter-spacing:1px; }
+.set-info button:hover { background:#282820; color:white; }
+#set-status { text-align:center; font:13px Arial,sans-serif; color:#888; margin:20px; }
+@media(max-width:800px) { #set-grid { grid-template-columns:1fr; } }
+
 #painting-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -264,6 +278,7 @@ footer {
   <nav>
     <a href="#home">HOME</a>
     <a href="#shop">SHOP</a>
+    <a href="#sets">SETS</a>
     <a href="#about">ABOUT</a>
     <a href="#contact">CONTACT</a>
   </nav>
@@ -282,6 +297,13 @@ footer {
   </p>
 
   <a href="#shop" class="btn">EXPLORE THE COLLECTION</a>
+</section>
+
+<section id="sets">
+  <h2 class="section-title">Art Sets</h2>
+  <p class="section-subtitle">Explore curated collections. Each set is sold as one complete collection.</p>
+  <div id="set-status">Loading sets...</div>
+  <div id="set-grid"></div>
 </section>
 
 <section id="shop">
@@ -389,6 +411,57 @@ function showEmptyShop() {
   `;
 }
 
+
+const setGrid = document.getElementById("set-grid");
+const setStatus = document.getElementById("set-status");
+
+async function loadSets() {
+  const { data, error } = await supabaseClient
+    .from("painting_sets")
+    .select("*")
+    .eq("status", "available")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Sets could not be loaded:", error);
+    setStatus.textContent = "Sets are temporarily unavailable.";
+    return;
+  }
+  if (!data || data.length === 0) {
+    setStatus.textContent = "No sets available yet.";
+    setGrid.innerHTML = "";
+    return;
+  }
+
+  setStatus.textContent = "";
+  setGrid.innerHTML = data.map(set => {
+    const paths = Array.isArray(set.image_paths) ? set.image_paths : [];
+    const images = paths.map((path, i) => {
+      const url = getImageURL(path);
+      return `<img src="${escapeHTML(url)}" alt="${escapeHTML(set.title)} — image ${i + 1}" loading="lazy">`;
+    }).join("");
+    return `
+      <article class="set-card">
+        <div class="set-gallery" aria-label="Swipe to view all paintings in this set">${images}</div>
+        <div class="set-info">
+          <h3>${escapeHTML(set.title)}</h3>
+          <p>${escapeHTML(set.description)}</p>
+          <div class="set-price">${escapeHTML(formatPrice(set.price, set.currency))}</div>
+          <button onclick="contactAboutSet('${encodeURIComponent(set.title)}')">INQUIRE ABOUT COMPLETE SET</button>
+        </div>
+      </article>`;
+  }).join("");
+}
+
+function contactAboutSet(encodedTitle) {
+  const title = decodeURIComponent(encodedTitle);
+  const message = `Hi! I'm interested in purchasing the complete "${title}" set from Gulls Gallery. Is it available?`;
+  window.open("https://ig.me/m/gulls_gallery", "_blank");
+  navigator.clipboard.writeText(message)
+    .then(() => alert("Your complete-set inquiry message has been copied! Paste it into our Instagram DM."))
+    .catch(() => alert("Instagram opened! Please ask about the complete " + title + " set."));
+}
+
 async function loadPaintings() {
   status.textContent = "Loading paintings...";
 
@@ -480,6 +553,7 @@ function contactAboutPainting(encodedTitle) {
 }
 
 
+loadSets();
 loadPaintings();
 </script>
 
