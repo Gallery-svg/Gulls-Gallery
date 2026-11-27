@@ -23,6 +23,33 @@
 footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);letter-spacing:1px;border-top:1px solid var(--line)}
 /* Artwork details */
 .modal{position:fixed;inset:0;z-index:50;background:rgba(27,26,22,.62);display:none;align-items:center;justify-content:center;padding:24px}.modal.open{display:flex}.modal-panel{position:relative;background:var(--white);width:min(100%,1000px);max-height:92vh;overflow:auto;display:grid;grid-template-columns:1.05fr .95fr}.modal-close{position:absolute;right:15px;top:13px;width:38px;height:38px;border:0;background:rgba(255,254,250,.92);font:25px var(--sans);cursor:pointer;z-index:2}.detail-gallery{background:#ebe8e0;min-width:0}.detail-main{width:100%;height:500px;object-fit:contain;display:block;background:#ebe8e0}.detail-thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto}.detail-thumbs button{border:1px solid transparent;background:none;padding:0;flex:0 0 70px;height:70px;cursor:pointer}.detail-thumbs button.active{border-color:var(--gold)}.detail-thumbs img{width:100%;height:100%;object-fit:cover}.detail-copy{padding:58px 42px 40px;display:flex;flex-direction:column;align-items:flex-start}.detail-copy .eyebrow{margin-bottom:18px}.detail-copy h2{font-size:clamp(28px,4vw,40px);font-weight:400;line-height:1.15;margin:0}.detail-price{font:16px var(--sans);color:var(--gold);margin:19px 0}.detail-description{font:13px/1.9 var(--sans);color:var(--muted);white-space:pre-line}.detail-facts{width:100%;margin:23px 0;border-top:1px solid var(--line)}.fact{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line);font:11px var(--sans)}.fact span:first-child{color:var(--muted)}.inquire{margin-top:auto;width:100%;padding:17px 18px;border:0;background:var(--ink);color:white;cursor:pointer;font:10px var(--sans);letter-spacing:1.6px}.inquire:hover{background:var(--gold)}.detail-note{font:10px/1.6 var(--sans);color:var(--muted);margin-top:12px;text-align:center;width:100%}
+
+/* Refined collection controls and artwork-card details */
+.toolbar{gap:16px;margin-bottom:32px}
+.search-wrap span{color:var(--gold);font-size:20px}
+.search{border-color:#d8d2c7;border-radius:2px;padding-top:14px;padding-bottom:14px;transition:border-color .2s,box-shadow .2s}
+.search::placeholder{color:#969187}
+.search:focus,.sort-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(155,128,89,.10)}
+.sort-wrap{padding:6px 8px 6px 12px;border:1px solid #d8cfbf;background:var(--white);border-radius:2px}
+.sort-label{font-weight:700;color:var(--gold);white-space:nowrap}
+.sort-select{appearance:none;-webkit-appearance:none;border:0;border-left:1px solid var(--line);background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='m2 3 3 3 3-3' fill='none' stroke='%239b8059' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 8px center;padding:9px 26px 9px 12px;font-weight:600;cursor:pointer}
+.filter{background:var(--white);border-color:#ded9cf;font-weight:600;transition:all .2s}
+.filter:focus-visible,.sort-select:focus-visible,.search:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.product-grid{gap:38px 24px}
+.product-card{transition:transform .25s ease}
+.product-card:hover{transform:translateY(-3px)}
+.product-image{border:1px solid rgba(41,40,33,.055)}
+.product-type{color:var(--gold);font-weight:700;border:1px solid rgba(155,128,89,.2)}
+.product-meta{padding-top:17px}
+.product-meta h3{font-size:20px;letter-spacing:.1px}
+.product-meta p{line-height:1.8}
+.product-bottom{margin-top:15px;padding-top:11px;border-top:1px solid var(--line)}
+.product-price{font-weight:600}
+.view-detail{font-weight:700;letter-spacing:1.5px}
+.set-stack .stack-sheet{border:6px solid var(--white);outline:1px solid #d8d0c2;box-shadow:none}
+.set-stack .sheet-back{transform:translate(-7px,3px) rotate(-7deg)}
+.set-stack .sheet-middle{transform:translate(5px,2px) rotate(5deg)}
+
 @media(max-width:900px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal-panel{grid-template-columns:1fr 1fr}.detail-main{height:420px}.detail-copy{padding:52px 26px 28px}}
 @media(max-width:620px){.site-header{height:auto;min-height:70px;padding:15px 5%;gap:12px}.brand{font-size:16px;letter-spacing:3px}.brand small{font-size:8px}.nav{gap:13px}.nav a{font-size:9px;letter-spacing:.8px}.hero{padding:75px 7% 65px}.hero h1{letter-spacing:-1px}.collection{padding:54px 5% 68px}.toolbar{align-items:stretch}.search-wrap{max-width:none;flex-basis:100%}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.product-grid{gap:25px 12px}.product-image{aspect-ratio:4/4.8}.product-meta{padding-top:12px}.product-meta h3{font-size:16px}.product-meta p{font-size:10px}.product-price{font-size:11px}.view-detail{font-size:8px}.modal{padding:0;align-items:flex-end}.modal-panel{width:100%;max-height:95vh;display:block}.detail-main{height:340px}.detail-copy{padding:27px 23px 25px}.detail-copy h2{font-size:30px}.modal-close{position:fixed;top:12px;right:12px}.inquire{margin-top:25px}}
 @media(max-width:390px){.nav{gap:9px}.nav a{font-size:8px}.product-grid{grid-template-columns:1fr}.product-image{aspect-ratio:4/4.2}}
@@ -45,9 +72,9 @@ footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);l
   <section class="collection" id="collection">
     <div class="section-head"><div class="eyebrow">The gallery</div><h2>Explore the Collection</h2><p>Find a piece that speaks to you. Select any artwork to explore its details.</p></div>
     <div class="toolbar">
-      <label class="search-wrap"><span>⌕</span><input id="search-input" class="search" type="search" placeholder="Search artworks..." aria-label="Search artworks"></label>
+      <label class="search-wrap"><span>⌕</span><input id="search-input" class="search" type="search" placeholder="Search by artwork name or category..." aria-label="Search artworks"></label>
       <div class="filters" id="category-filters"><button class="filter active" data-category="all">ALL ARTWORK</button></div>
-      <label class="sort-wrap"><span class="sort-label">SORT BY</span><select id="sort-select" class="sort-select" aria-label="Sort artworks"><option value="newest">Newest first</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="name">Name A–Z</option></select></label>
+      <label class="sort-wrap"><span class="sort-label">SORT BY</span><select id="sort-select" class="sort-select" aria-label="Sort artworks"><option value="newest">Newest first</option><option value="price-low">Price · Low to High</option><option value="price-high">Price · High to Low</option><option value="name">Name A–Z</option></select></label>
     </div>
     <div id="shop-status" class="status">Loading the collection...</div>
     <div id="painting-grid" class="product-grid"></div>
