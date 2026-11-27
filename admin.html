@@ -53,8 +53,11 @@ main{margin:15px auto}
 <div class="card">
 <h2 id="formHeading">Upload a Painting</h2>
 <form id="paintingForm">
-<label>Painting Image</label>
+<label>Main Painting Image (cover)</label>
 <input id="image" type="file" accept="image/*">
+<label>Additional Photos (different angles/details)</label>
+<input id="extraImages" type="file" accept="image/*" multiple>
+<small id="existingPhotoInfo">You can select several photos. They will all appear inside this one artwork.</small>
 
 <label>Title</label>
 <input id="title" required placeholder="Painting title">
@@ -134,6 +137,7 @@ const form = document.getElementById("paintingForm");
 
 let editingId = null;
 let originalImagePath = null;
+let originalImagePaths = [];
 
 function showLogin(){
   loginSection.style.display="block";
@@ -234,6 +238,9 @@ function resetForm(){
   form.reset();
   editingId=null;
   originalImagePath=null;
+  originalImagePaths=[];
+  document.getElementById("extraImages").value="";
+  document.getElementById("existingPhotoInfo").textContent="You can select several photos. They will all appear inside this one artwork.";
   document.getElementById("formHeading").textContent="Upload a Painting";
   document.getElementById("saveButton").textContent="Upload Painting";
   document.getElementById("cancelButton").style.display="none";
@@ -256,6 +263,9 @@ async function editPainting(id){
 
   editingId=id;
   originalImagePath=p.image_path;
+  originalImagePaths=Array.isArray(p.image_paths)&&p.image_paths.length?p.image_paths.slice():(p.image_path?[p.image_path]:[]);
+  document.getElementById("extraImages").value="";
+  document.getElementById("existingPhotoInfo").textContent="This artwork currently has "+originalImagePaths.length+" photo(s). Add more photos below; existing photos will be kept.";
 
   document.getElementById("title").value=p.title||"";
   document.getElementById("description").value=p.description||"";
@@ -278,6 +288,7 @@ form.addEventListener("submit",async e=>{
 
   const message=document.getElementById("formMessage");
   const file=document.getElementById("image").files[0];
+  const extraFiles=Array.from(document.getElementById("extraImages").files||[]);
 
   const title=document.getElementById("title").value.trim();
   const description=document.getElementById("description").value.trim();
@@ -293,35 +304,65 @@ form.addEventListener("submit",async e=>{
   }
 
   if(file && !file.type.startsWith("image/")){
-    message.textContent="Please select a valid image.";
+    message.textContent="Please select a valid main image.";
+    return;
+  }
+  if(extraFiles.some(photo=>!photo.type.startsWith("image/"))){
+    message.textContent="Please select image files only.";
+    return;
+  }
+  if(!editingId&&!file){
+    message.textContent="Please select a main painting image.";
     return;
   }
 
-  message.textContent="Saving...";
+  message.textContent="Uploading photos and saving...";
 
   let imagePath=originalImagePath;
-  let newImagePath=null;
+  const uploadedPaths=[];
 
-  if(file){
-    const extension=file.name.split(".").pop().toLowerCase();
-    newImagePath=crypto.randomUUID()+"."+extension;
-
-    const {error:uploadError}=await db.storage.from("painting")
-      .upload(newImagePath,file);
-
-    if(uploadError){
-      message.textContent=uploadError.message;
-      return;
-    }
-
-    imagePath=newImagePath;
+  async function uploadPhoto(photo){
+    const extension=(photo.name.split(".").pop()||"jpg").toLowerCase();
+    const path=crypto.randomUUID()+"."+extension;
+    const {error:uploadError}=await db.storage.from("painting").upload(path,photo);
+    if(uploadError) throw uploadError;
+    uploadedPaths.push(path);
+    return path;
   }
 
-  const paintingData={
-    title,description,price,currency,category,dimensions,medium,
-    image_path:imagePath,
-    status:"available"
-  };
+  try{
+    if(file) imagePath=await uploadPhoto(file);
+    const extraPaths=[];
+    for(const photo of extraFiles) extraPaths.push(await uploadPhoto(photo));
+    const keptPaths=originalImagePaths.length?originalImagePaths:(originalImagePath?[originalImagePath]:[]);
+    const imagePaths=[...new Set([...(file?[imagePath]:keptPaths),...(!file?[]:keptPaths),...extraPaths])];
+
+    const paintingData={
+      title,description,price,currency,category,dimensions,medium,
+      image_path:imagePath,
+      image_paths:imagePaths,
+      status:"available"
+    };
+
+    let saveError;
+    if(editingId){
+      const result=await db.from("paintings").update(paintingData).eq("id",editingId);
+      saveError=result.error;
+    }else{
+      const result=await db.from("paintings").insert(paintingData);
+      saveError=result.error;
+    }
+
+    if(saveError) throw saveError;
+
+    message.textContent=editingId?"Painting updated successfully!":"Painting uploaded successfully!";
+    resetForm();
+    await loadPaintings();
+  }catch(error){
+    if(uploadedPaths.length) await db.storage.from("painting").remove(uploadedPaths);
+    message.textContent="Could not save artwork: "+(error.message||String(error));
+  }
+  return;
 
   let saveError;
 
@@ -359,7 +400,7 @@ async function deletePainting(id){
   if(!confirm("Delete this painting permanently?"))return;
 
   const {data:p,error}=await db.from("paintings")
-    .select("image_path").eq("id",id).single();
+    .select("image_path,image_paths").eq("id",id).single();
 
   if(error){
     alert(error.message);
@@ -374,10 +415,9 @@ async function deletePainting(id){
     return;
   }
 
-  if(p.image_path){
-    const {error:storageError}=await db.storage.from("painting")
-      .remove([p.image_path]);
-
+  const paths=[...new Set([p.image_path,...(Array.isArray(p.image_paths)?p.image_paths:[])].filter(Boolean))];
+  if(paths.length){
+    const {error:storageError}=await db.storage.from("painting").remove(paths);
     if(storageError) console.error(storageError.message);
   }
 
