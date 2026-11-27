@@ -18,13 +18,13 @@
 .toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 28px;flex-wrap:wrap}.sort-wrap{display:flex;align-items:center;gap:10px}.sort-label{font:9px var(--sans);letter-spacing:1.5px;color:var(--muted)}.sort-select{border:1px solid var(--line);background:var(--white);padding:11px 12px;color:var(--ink);font:11px var(--sans);outline:none}.search-wrap{position:relative;flex:1;max-width:360px}.search-wrap span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8b877e;font:16px var(--sans)}.search{width:100%;padding:13px 14px 13px 40px;border:1px solid var(--line);background:var(--white);outline:none;font:12px var(--sans);color:var(--ink)}.search:focus{border-color:var(--gold)}.filters{display:flex;gap:8px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:transparent;padding:10px 15px;color:var(--muted);font:10px var(--sans);letter-spacing:1px;cursor:pointer}.filter.active,.filter:hover{background:var(--ink);border-color:var(--ink);color:#fff}
 .product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 22px}.product-card{min-width:0;cursor:pointer}.product-image{position:relative;background:#ebe8e0;overflow:hidden;aspect-ratio:4/4.7}.product-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s cubic-bezier(.2,.7,.2,1)}.product-card:hover .product-image img{transform:scale(1.035)}.product-type{position:absolute;top:14px;left:14px;background:rgba(255,254,250,.92);padding:8px 10px;font:9px var(--sans);letter-spacing:1.4px;text-transform:uppercase}.product-meta{padding:16px 2px 0}.product-meta h3{font-size:19px;font-weight:400;margin:0}.product-meta p{font:11px/1.7 var(--sans);color:var(--muted);margin:8px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px}.product-price{font:12px var(--sans);color:var(--gold)}.view-detail{font:9px var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--gold);padding-bottom:4px}
 .status,.empty{grid-column:1/-1;text-align:center;padding:52px 15px;color:var(--muted);font:13px/1.8 var(--sans)}
-.set-section{background:#eeece5;max-width:none;padding-left:6.5%;padding-right:6.5%}.set-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}.set-card{background:var(--white);cursor:pointer}.set-gallery{display:flex;gap:7px;padding:8px;overflow-x:auto;scroll-snap-type:x mandatory;background:#e9e6de}.set-gallery img{flex:0 0 78%;width:78%;height:320px;object-fit:cover;scroll-snap-align:start}.set-copy{padding:21px 23px 24px}.set-copy h3{font-size:23px;font-weight:400;margin:0}.set-copy p{font:12px/1.8 var(--sans);color:var(--muted);margin:10px 0}.set-copy .product-bottom{margin-top:16px}
+.set-stack{overflow:hidden;background:transparent!important;position:relative}.set-stack .stack-sheet{position:absolute;inset:8px 10px 0;width:calc(100% - 20px);height:calc(100% - 8px);object-fit:cover;border:7px solid var(--white);background:#e7e2d8}.set-stack .sheet-back{transform:translate(-5px,2px) rotate(-6deg);z-index:0}.set-stack .sheet-middle{transform:translate(4px,1px) rotate(4deg);z-index:1}.set-stack .sheet-front{transform:rotate(-1deg);z-index:2}.set-stack .product-type{z-index:3}
 .about{padding:90px 7%;text-align:center;background:var(--paper)}.about p{max-width:620px;margin:20px auto 0;color:var(--muted);font-size:15px;line-height:2}.contact{padding:72px 7%;text-align:center;background:#e9e6de}.contact p{font:13px/1.8 var(--sans);color:var(--muted);max-width:500px;margin:15px auto}.contact a{display:inline-block;margin-top:18px;padding:15px 24px;background:var(--ink);color:white;text-decoration:none;font:10px var(--sans);letter-spacing:1.5px}
 footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);letter-spacing:1px;border-top:1px solid var(--line)}
 /* Artwork details */
 .modal{position:fixed;inset:0;z-index:50;background:rgba(27,26,22,.62);display:none;align-items:center;justify-content:center;padding:24px}.modal.open{display:flex}.modal-panel{position:relative;background:var(--white);width:min(100%,1000px);max-height:92vh;overflow:auto;display:grid;grid-template-columns:1.05fr .95fr}.modal-close{position:absolute;right:15px;top:13px;width:38px;height:38px;border:0;background:rgba(255,254,250,.92);font:25px var(--sans);cursor:pointer;z-index:2}.detail-gallery{background:#ebe8e0;min-width:0}.detail-main{width:100%;height:500px;object-fit:contain;display:block;background:#ebe8e0}.detail-thumbs{display:flex;gap:8px;padding:10px;overflow-x:auto}.detail-thumbs button{border:1px solid transparent;background:none;padding:0;flex:0 0 70px;height:70px;cursor:pointer}.detail-thumbs button.active{border-color:var(--gold)}.detail-thumbs img{width:100%;height:100%;object-fit:cover}.detail-copy{padding:58px 42px 40px;display:flex;flex-direction:column;align-items:flex-start}.detail-copy .eyebrow{margin-bottom:18px}.detail-copy h2{font-size:clamp(28px,4vw,40px);font-weight:400;line-height:1.15;margin:0}.detail-price{font:16px var(--sans);color:var(--gold);margin:19px 0}.detail-description{font:13px/1.9 var(--sans);color:var(--muted);white-space:pre-line}.detail-facts{width:100%;margin:23px 0;border-top:1px solid var(--line)}.fact{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line);font:11px var(--sans)}.fact span:first-child{color:var(--muted)}.inquire{margin-top:auto;width:100%;padding:17px 18px;border:0;background:var(--ink);color:white;cursor:pointer;font:10px var(--sans);letter-spacing:1.6px}.inquire:hover{background:var(--gold)}.detail-note{font:10px/1.6 var(--sans);color:var(--muted);margin-top:12px;text-align:center;width:100%}
 @media(max-width:900px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.modal-panel{grid-template-columns:1fr 1fr}.detail-main{height:420px}.detail-copy{padding:52px 26px 28px}}
-@media(max-width:620px){.site-header{height:auto;min-height:70px;padding:15px 5%;gap:12px}.brand{font-size:16px;letter-spacing:3px}.brand small{font-size:8px}.nav{gap:13px}.nav a{font-size:9px;letter-spacing:.8px}.hero{padding:75px 7% 65px}.hero h1{letter-spacing:-1px}.collection{padding:54px 5% 68px}.toolbar{align-items:stretch}.search-wrap{max-width:none;flex-basis:100%}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.product-grid{gap:25px 12px}.product-image{aspect-ratio:4/4.8}.product-meta{padding-top:12px}.product-meta h3{font-size:16px}.product-meta p{font-size:10px}.product-price{font-size:11px}.view-detail{font-size:8px}.set-section{padding-left:5%;padding-right:5%}.set-grid{grid-template-columns:1fr}.set-gallery img{height:260px}.modal{padding:0;align-items:flex-end}.modal-panel{width:100%;max-height:95vh;display:block}.detail-main{height:340px}.detail-copy{padding:27px 23px 25px}.detail-copy h2{font-size:30px}.modal-close{position:fixed;top:12px;right:12px}.inquire{margin-top:25px}}
+@media(max-width:620px){.site-header{height:auto;min-height:70px;padding:15px 5%;gap:12px}.brand{font-size:16px;letter-spacing:3px}.brand small{font-size:8px}.nav{gap:13px}.nav a{font-size:9px;letter-spacing:.8px}.hero{padding:75px 7% 65px}.hero h1{letter-spacing:-1px}.collection{padding:54px 5% 68px}.toolbar{align-items:stretch}.search-wrap{max-width:none;flex-basis:100%}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.product-grid{gap:25px 12px}.product-image{aspect-ratio:4/4.8}.product-meta{padding-top:12px}.product-meta h3{font-size:16px}.product-meta p{font-size:10px}.product-price{font-size:11px}.view-detail{font-size:8px}.modal{padding:0;align-items:flex-end}.modal-panel{width:100%;max-height:95vh;display:block}.detail-main{height:340px}.detail-copy{padding:27px 23px 25px}.detail-copy h2{font-size:30px}.modal-close{position:fixed;top:12px;right:12px}.inquire{margin-top:25px}}
 @media(max-width:390px){.nav{gap:9px}.nav a{font-size:8px}.product-grid{grid-template-columns:1fr}.product-image{aspect-ratio:4/4.2}}
 </style>
 </head>
@@ -32,7 +32,7 @@ footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);l
 <header class="site-header">
   <a class="brand" href="#home">GULLS GALLERY<small>ART · CREATIVITY · EXPRESSION</small></a>
   <nav class="nav" aria-label="Main navigation">
-    <a href="#collection">COLLECTION</a><a href="#sets">ART SETS</a><a href="#about">ABOUT</a><a href="#contact">CONTACT</a>
+    <a href="#collection">COLLECTION</a><a href="#collection">ART SETS</a><a href="#about">ABOUT</a><a href="#contact">CONTACT</a>
   </nav>
 </header>
 <main>
@@ -51,11 +51,6 @@ footer{padding:28px;text-align:center;color:var(--muted);font:10px var(--sans);l
     </div>
     <div id="shop-status" class="status">Loading the collection...</div>
     <div id="painting-grid" class="product-grid"></div>
-  </section>
-  <section class="collection set-section" id="sets">
-    <div class="section-head"><div class="eyebrow">Collected together</div><h2>Art Sets</h2><p>Curated collections, offered as one complete set. Swipe through the photographs to see every piece.</p></div>
-    <div id="set-status" class="status">Loading art sets...</div>
-    <div id="set-grid" class="set-grid"></div>
   </section>
   <section class="about" id="about"><div class="eyebrow">A little about us</div><h2 class="section-head" style="margin:12px 0 0">Our Story</h2><p>Welcome to Gulls Gallery, a place where creativity meets expression. Discover original handmade paintings and carefully presented art that bring beauty and character to every space.</p></section>
   <section class="contact" id="contact"><div class="eyebrow">Start a conversation</div><h2 class="section-head" style="margin:12px 0 0">Interested in a piece?</h2><p>Ask us about artwork availability, pricing or delivery. We will be happy to help you find the right piece.</p><a href="https://ig.me/m/gulls_gallery" target="_blank" rel="noopener">CONTACT US ON INSTAGRAM</a></section>
@@ -76,8 +71,6 @@ const SUPABASE_KEY = "sb_publishable_ULiwO1F1szXwkSRRJDUGlA_heLVr3lO";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const grid = document.getElementById("painting-grid");
 const status = document.getElementById("shop-status");
-const setGrid = document.getElementById("set-grid");
-const setStatus = document.getElementById("set-status");
 const modal = document.getElementById("detail-modal");
 const detailMainImage = document.getElementById("detail-main-image");
 let paintings = [];
@@ -104,44 +97,45 @@ function artworkImages(item,type) {
 }
 function renderFilters() {
   const categories=[...new Set(paintings.map(p=>p.category).filter(Boolean))].sort();
-  document.getElementById("category-filters").innerHTML =
-    '<button class="filter '+(selectedCategory==="all"?"active":"")+'" data-category="all">ALL ARTWORK</button>'+
-    categories.map(c=>'<button class="filter '+(selectedCategory===c?"active":"")+'" data-category="'+escapeHTML(c)+'">'+escapeHTML(c.toUpperCase())+'</button>').join("");
+  const buttons=[
+    '<button class="filter '+(selectedCategory==="all"?"active":"")+'" data-category="all">ALL ARTWORK</button>',
+    '<button class="filter '+(selectedCategory==="sets"?"active":"")+'" data-category="sets">ART SETS</button>',
+    ...categories.map(c=>'<button class="filter '+(selectedCategory===c?"active":"")+'" data-category="'+escapeHTML(c)+'">'+escapeHTML(c.toUpperCase())+'</button>')
+  ];
+  document.getElementById("category-filters").innerHTML=buttons.join("");
   document.querySelectorAll(".filter").forEach(button=>button.addEventListener("click",()=>{
     selectedCategory=button.dataset.category;renderFilters();renderPaintings();
   }));
 }
 function renderPaintings() {
   const term=document.getElementById("search-input").value.trim().toLowerCase();
-  let filtered=paintings.filter(p=>{
-    const matchesCategory=selectedCategory==="all"||p.category===selectedCategory;
-    const haystack=[p.title,p.description,p.category,p.medium,p.dimensions].join(" ").toLowerCase();
-    return matchesCategory&&haystack.includes(term);
-  });
   const sortMode=document.getElementById("sort-select")?.value||"newest";
-  filtered.sort((a,b)=>sortMode==="price-low"?Number(a.price)-Number(b.price):sortMode==="price-high"?Number(b.price)-Number(a.price):sortMode==="name"?String(a.title).localeCompare(String(b.title)):new Date(b.created_at||0)-new Date(a.created_at||0));
-  if(!filtered.length){grid.innerHTML='<div class="empty">No artwork matches your search. Try another name or category.</div>';return;}
-  grid.innerHTML=filtered.map(p=>{
-    const image=getImageURL(p.image_path);
-    return '<article class="product-card" role="button" tabindex="0" data-kind="painting" data-id="'+escapeHTML(p.id)+'" aria-label="View details for '+escapeHTML(p.title)+'">'+
-      '<div class="product-image">'+(image?'<img src="'+escapeHTML(image)+'" alt="'+escapeHTML(p.title)+'" loading="lazy">':'')+
-      (p.category?'<span class="product-type">'+escapeHTML(p.category)+'</span>':'')+'</div>'+
-      '<div class="product-meta"><h3>'+escapeHTML(p.title)+'</h3><p>'+escapeHTML(p.description)+'</p>'+
-      '<div class="product-bottom"><span class="product-price">'+escapeHTML(formatPrice(p.price,p.currency))+'</span><span class="view-detail">VIEW DETAILS ↗</span></div></div></article>';
+  let items=[...paintings.map(item=>({kind:"painting",item})),...sets.map(item=>({kind:"set",item}))]
+    .filter(({kind,item})=>{
+      const matchesCategory=selectedCategory==="all"||(selectedCategory==="sets"?kind==="set":kind==="painting"&&item.category===selectedCategory);
+      const haystack=[item.title,item.description,item.category,item.medium,item.dimensions,kind==="set"?"art set":"painting"].join(" ").toLowerCase();
+      return matchesCategory&&haystack.includes(term);
+    });
+  items.sort((a,b)=>sortMode==="price-low"?Number(a.item.price)-Number(b.item.price):sortMode==="price-high"?Number(b.item.price)-Number(a.item.price):sortMode==="name"?String(a.item.title).localeCompare(String(b.item.title)):new Date(b.item.created_at||0)-new Date(a.item.created_at||0));
+  if(!items.length){grid.innerHTML='<div class="empty">No artwork matches your search. Try another name or category.</div>';return;}
+  grid.innerHTML=items.map(({kind,item})=>{
+    const isSet=kind==="set";
+    let visual="";
+    if(isSet){
+      const urls=artworkImages(item,"set"),layers=[urls[2]||"",urls[1]||"",urls[0]||""];
+      visual='<div class="product-image set-stack">'+
+        (layers[0]?'<img class="stack-sheet sheet-back" src="'+escapeHTML(layers[0])+'" alt="" loading="lazy">':'<div class="stack-sheet sheet-back"></div>')+
+        (layers[1]?'<img class="stack-sheet sheet-middle" src="'+escapeHTML(layers[1])+'" alt="" loading="lazy">':'<div class="stack-sheet sheet-middle"></div>')+
+        (layers[2]?'<img class="stack-sheet sheet-front" src="'+escapeHTML(layers[2])+'" alt="'+escapeHTML(item.title)+'" loading="lazy">':'<div class="stack-sheet sheet-front"></div>')+
+        '<span class="product-type">ART SET · '+urls.length+' PIECES</span></div>';
+    }else{
+      const image=getImageURL(item.image_path);
+      visual='<div class="product-image">'+(image?'<img src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.title)+'" loading="lazy">':'')+(item.category?'<span class="product-type">'+escapeHTML(item.category)+'</span>':'')+'</div>';
+    }
+    return '<article class="product-card" role="button" tabindex="0" data-kind="'+kind+'" data-id="'+escapeHTML(item.id)+'" aria-label="View details for '+escapeHTML(item.title)+'">'+visual+
+      '<div class="product-meta"><h3>'+escapeHTML(item.title)+'</h3><p>'+escapeHTML(item.description)+'</p><div class="product-bottom"><span class="product-price">'+escapeHTML(formatPrice(item.price,item.currency))+(isSet?' · Complete set':'')+'</span><span class="view-detail">VIEW DETAILS ↗</span></div></div></article>';
   }).join("");
   attachCardEvents(grid);
-}
-function renderSets() {
-  if(!sets.length){setStatus.textContent="New collections will be featured here soon.";setGrid.innerHTML="";return;}
-  setStatus.textContent="";
-  setGrid.innerHTML=sets.map(s=>{
-    const urls=artworkImages(s,"set");
-    const imgs=urls.map((url,i)=>'<img src="'+escapeHTML(url)+'" alt="'+escapeHTML(s.title)+' — image '+(i+1)+'" loading="lazy">').join("");
-    return '<article class="set-card" role="button" tabindex="0" data-kind="set" data-id="'+escapeHTML(s.id)+'" aria-label="View details for '+escapeHTML(s.title)+'">'+
-      '<div class="set-gallery" aria-label="Swipe to view images">'+imgs+'</div><div class="set-copy"><h3>'+escapeHTML(s.title)+'</h3><p>'+escapeHTML(s.description)+'</p>'+
-      '<div class="product-bottom"><span class="product-price">'+escapeHTML(formatPrice(s.price,s.currency))+' · Complete set</span><span class="view-detail">VIEW DETAILS ↗</span></div></div></article>';
-  }).join("");
-  attachCardEvents(setGrid);
 }
 function attachCardEvents(container) {
   container.querySelectorAll("[data-kind]").forEach(card=>{
@@ -196,8 +190,8 @@ async function loadPaintings(){
 }
 async function loadSets(){
   const {data,error}=await supabaseClient.from("painting_sets").select("*").eq("status","available").order("created_at",{ascending:false});
-  if(error){console.error("Sets could not be loaded:",error);setStatus.textContent="Art sets are temporarily unavailable.";return;}
-  sets=data||[];renderSets();
+  if(error){console.error("Sets could not be loaded:",error);return;}
+  sets=data||[];renderFilters();renderPaintings();
 }
 loadPaintings();loadSets();
 </script>
