@@ -205,7 +205,9 @@ function formatPrice(price, currency) {
 }
 function artworkImages(item,type) {
   if(type==="set") return (Array.isArray(item.image_paths)?item.image_paths:[]).map(getImageURL).filter(Boolean);
-  return item.image_path ? [getImageURL(item.image_path)] : [];
+  const paths = Array.isArray(item.image_paths) ? item.image_paths : [];
+  const ordered = item.image_path ? [item.image_path, ...paths.filter(path=>path!==item.image_path)] : paths;
+  return ordered.map(getImageURL).filter(Boolean);
 }
 function renderFilters() {
   const categories=[...new Set(paintings.map(p=>p.category).filter(Boolean))].sort();
