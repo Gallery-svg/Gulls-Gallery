@@ -194,6 +194,17 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
   #detail-modal .modal-close{position:fixed;top:12px;right:14px}
 }
 
+
+/* Recently viewed artwork */
+.recently-viewed{padding:58px 5% 72px;background:#f9e8d5;border-top:1px solid #e8c9a8}
+.recent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,240px));justify-content:center;gap:18px;max-width:1200px;margin:0 auto}
+.recent-card{min-width:0;cursor:pointer;background:#fff8ed;border:1px solid #dfbd96;padding:7px;transition:transform .2s}
+.recent-card:hover{transform:translateY(-3px)}
+.recent-card img{width:100%;height:190px;display:block;object-fit:cover;background:#f0dfca}
+.recent-card h3{font:18px var(--serif);margin:11px 8px 5px;color:#321b17}
+.recent-card p{font:12px var(--sans);margin:0 8px 8px;color:#8c101c}
+@media(max-width:620px){.recently-viewed{padding:40px 5% 52px}.recent-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.recent-card img{height:145px}.recent-card h3{font-size:15px}}
+
 </style>
 </head>
 <body>
@@ -219,6 +230,10 @@ footer{position:relative;background:#74101b;color:#f8e6d2;border:0}
     </div>
     <div id="shop-status" class="status">Loading the collection...</div>
     <div id="painting-grid" class="product-grid"></div>
+  </section>
+  <section class="recently-viewed" id="recently-viewed" hidden>
+    <div class="more-heading"><span class="eyebrow">Your browsing history</span><h2>Recently Viewed</h2><p>Pick up where you left off and revisit artwork you explored.</p></div>
+    <div id="recently-viewed-grid" class="recent-grid"></div>
   </section>
   <section class="about" id="about"><div class="eyebrow">A little about us</div><h2 class="section-head" style="margin:12px 0 0">Our Story</h2><p>Welcome to Gulls Gallery, a place where creativity meets expression. Discover original handmade paintings and carefully presented art that bring beauty and character to every space.</p></section>
   <section class="contact" id="contact"><div class="eyebrow">Start a conversation</div><h2 class="section-head" style="margin:12px 0 0">Interested in a piece?</h2><p>Ask us about artwork availability, pricing or delivery. We will be happy to help you find the right piece.</p><a href="https://ig.me/m/gulls_gallery" target="_blank" rel="noopener">CONTACT US ON INSTAGRAM</a></section>
@@ -352,10 +367,41 @@ async function loadReviews(kind,id){
   if(!data||!data.length){container.innerHTML='<p class="no-reviews">No approved reviews yet. You can be the first to leave one.</p>';return;}
   container.innerHTML=data.map(review=>'<article class="review-item"><div class="review-top"><strong>'+escapeHTML(review.reviewer_name||"Guest")+'</strong><span class="review-stars" aria-label="'+Number(review.rating)+' out of 5 stars">'+("★".repeat(Math.max(0,Math.min(5,Number(review.rating)||0))))+("☆".repeat(5-Math.max(0,Math.min(5,Number(review.rating)||0))))+'</span></div><p>'+escapeHTML(review.review_text)+'</p><small>'+new Date(review.created_at).toLocaleDateString()+'</small></article>').join("");
 }
+const RECENTLY_VIEWED_KEY="gulls-gallery-recently-viewed-v1";
+function getRecentlyViewed(){
+  try{return JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY)||"[]").filter(x=>x&&x.kind&&x.id).slice(0,6);}
+  catch{return [];}
+}
+function renderRecentlyViewed(){
+  const section=document.getElementById("recently-viewed");
+  const container=document.getElementById("recently-viewed-grid");
+  if(!section||!container)return;
+  const recent=getRecentlyViewed().map(entry=>{
+    const source=entry.kind==="set"?sets:paintings;
+    const item=source.find(x=>String(x.id)===String(entry.id));
+    return item?{kind:entry.kind,item}:null;
+  }).filter(Boolean);
+  section.hidden=!recent.length;
+  if(!recent.length){container.innerHTML="";return;}
+  container.innerHTML=recent.map(({kind,item})=>{
+    const image=kind==="set"?artworkImages(item,"set")[0]:getImageURL(item.image_path);
+    return '<article class="recent-card" role="button" tabindex="0" data-kind="'+kind+'" data-id="'+escapeHTML(item.id)+'" aria-label="Revisit '+escapeHTML(item.title)+'">'+
+      (image?'<img src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.title)+'" loading="lazy">':'')+
+      '<h3>'+escapeHTML(item.title)+'</h3><p>'+escapeHTML(formatPrice(item.price,item.currency))+(kind==="set"?' · Complete set':'')+'</p></article>';
+  }).join("");
+  attachCardEvents(container);
+}
+function rememberRecentlyViewed(kind,id){
+  const next=[{kind,id:String(id)},...getRecentlyViewed().filter(x=>!(x.kind===kind&&String(x.id)===String(id)))].slice(0,6);
+  try{localStorage.setItem(RECENTLY_VIEWED_KEY,JSON.stringify(next));}catch(error){console.warn("Could not save browsing history:",error);}
+  renderRecentlyViewed();
+}
+
 function openDetails(kind,id) {
   const item=(kind==="set"?sets:paintings).find(x=>String(x.id)===String(id));
   if(!item)return;
   activeDetail={kind,item};
+  rememberRecentlyViewed(kind,id);
   document.querySelector("#detail-modal .detail-gallery").classList.remove("zoomed");
   document.getElementById("zoom-hint").textContent="Click image to zoom ⤢";
   activeImages=artworkImages(item,kind);
@@ -415,7 +461,7 @@ async function loadSets(){
   if(error){console.error("Sets could not be loaded:",error);return;}
   sets=data||[];renderFilters();renderPaintings();
 }
-Promise.all([loadPaintings(),loadSets()]).then(()=>{const match=location.hash.match(/^#artwork=(painting|set):(.+)$/);if(match)openDetails(match[1],decodeURIComponent(match[2]));});
+Promise.all([loadPaintings(),loadSets()]).then(()=>{renderRecentlyViewed();const match=location.hash.match(/^#artwork=(painting|set):(.+)$/);if(match)openDetails(match[1],decodeURIComponent(match[2]));});
 </script>
 </body>
 </html>
